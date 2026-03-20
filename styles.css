@@ -2,10 +2,13 @@
   color-scheme: light;
   --bg: #f6f7f9;
   --surface: #fff;
+  --surface-2: #fafbfc;
   --text: #111;
   --muted: #5b6472;
+  --label: #364152;
   --border: #e4e7ec;
   --border-soft: #eef0f3;
+  --input-border: #d0d5dd;
   --primary: #2563eb;
   --primary-hover: #1d4ed8;
   --primary-soft: #e8f0ff;
@@ -36,7 +39,7 @@ code {
 }
 
 .container {
-  max-width: 1100px;
+  max-width: 1120px;
   margin: 0 auto;
   padding: 28px 16px 48px;
 }
@@ -54,11 +57,18 @@ code {
   color: var(--muted);
 }
 
+.session-bar {
+  padding: 6px 10px;
+  border: 1px solid var(--border-soft);
+  border-radius: 999px;
+  background: var(--surface-2);
+}
+
 .card {
   background: var(--surface);
   border: 1px solid var(--border);
   border-radius: var(--radius);
-  padding: 18px;
+  padding: 20px;
   margin: 12px 0;
 }
 
@@ -99,7 +109,7 @@ code {
 
 h1 {
   margin: 0;
-  font-size: 1.7rem;
+  font-size: 1.75rem;
   letter-spacing: -0.02em;
 }
 
@@ -163,14 +173,14 @@ h3 {
 
 .field span {
   font-size: 0.9rem;
-  color: #364152;
+  color: var(--label);
 }
 
 .field input,
 .field select,
 .field textarea {
   width: 100%;
-  border: 1px solid #d0d5dd;
+  border: 1px solid var(--input-border);
   border-radius: 8px;
   padding: 10px;
   font-size: 1rem;
@@ -195,17 +205,19 @@ h3 {
 }
 
 .btn {
-  border: 1px solid #d0d5dd;
+  border: 1px solid var(--input-border);
   background: #fff;
   color: #111;
   padding: 10px 12px;
   border-radius: 8px;
   cursor: pointer;
+  font-weight: 600;
   transition: background 120ms ease, border-color 120ms ease, transform 80ms ease;
 }
 
 .btn:hover {
   background: var(--bg);
+  border-color: var(--border);
 }
 
 .btn:active {
@@ -233,6 +245,16 @@ h3 {
   background: var(--primary-hover);
 }
 
+.btn-danger {
+  border-color: var(--danger-border);
+  background: var(--danger-bg);
+  color: var(--danger-text);
+}
+
+.btn-danger:hover {
+  background: var(--danger-bg);
+}
+
 .btn-small {
   padding: 8px 10px;
   font-size: 0.9rem;
@@ -245,11 +267,12 @@ h3 {
 }
 
 .tab {
-  border: 1px solid #d0d5dd;
-  background: #fff;
+  border: 1px solid var(--input-border);
+  background: var(--surface);
   border-radius: 999px;
   padding: 8px 12px;
   cursor: pointer;
+  font-weight: 700;
 }
 
 .tab-active {
@@ -271,6 +294,7 @@ h3 {
   overflow: auto;
   border: 1px solid var(--border-soft);
   border-radius: 8px;
+  background: var(--surface);
 }
 
 .table {
@@ -290,7 +314,7 @@ h3 {
 .table th {
   position: sticky;
   top: 0;
-  background: #fafbfc;
+  background: var(--surface-2);
   z-index: 1;
 }
 
@@ -299,7 +323,7 @@ h3 {
 }
 
 .table tbody tr:nth-child(even) {
-  background: #fafbfc;
+  background: var(--surface-2);
 }
 
 .table .empty-row td {
@@ -318,8 +342,8 @@ h3 {
   display: inline-flex;
   align-items: center;
   border: 1px solid var(--border);
-  background: #fafbfc;
-  color: #364152;
+  background: var(--surface-2);
+  color: var(--label);
   padding: 4px 10px;
   border-radius: 999px;
   font-size: 0.85rem;

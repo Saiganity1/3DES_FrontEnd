@@ -258,10 +258,14 @@ function escapeText(s) {
   return String(s ?? "");
 }
 
-function createActionButton(label, onClick, { primary = false } = {}) {
+function createActionButton(label, onClick, { primary = false, danger = false } = {}) {
   const btn = document.createElement("button");
   btn.type = "button";
-  btn.className = primary ? "btn btn-small btn-primary" : "btn btn-small";
+  btn.className = primary
+    ? "btn btn-small btn-primary"
+    : danger
+      ? "btn btn-small btn-danger"
+      : "btn btn-small";
   btn.textContent = label;
   btn.addEventListener("click", onClick);
   return btn;
@@ -386,7 +390,7 @@ function renderAccountsTable() {
         if (!u.is_staff) {
           actions.appendChild(createActionButton("Promote to staff", () => promoteAccount(u), { primary: true }));
         }
-        actions.appendChild(createActionButton("Take down", () => takeDownAccount(u)));
+        actions.appendChild(createActionButton("Take down", () => takeDownAccount(u), { danger: true }));
       }
     }
 
@@ -492,9 +496,7 @@ function renderItemsTable() {
           createActionButton("Archive", () => archiveItem(it), { primary: false })
         );
       } else {
-        actions.appendChild(
-          createActionButton("Restore", () => restoreItem(it), { primary: true })
-        );
+        actions.appendChild(createActionButton("Restore", () => restoreItem(it), { primary: true }));
       }
     } else {
       actions.textContent = "—";
