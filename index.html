@@ -1,0 +1,183 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>CIT Laboratory Equipment Inventory</title>
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body>
+    <div class="container">
+      <header class="header">
+        <h1>CIT Laboratory Equipment Inventory</h1>
+        <div id="sessionBar" class="session-bar"></div>
+      </header>
+
+      <section class="card">
+        <h2>API Configuration</h2>
+        <p class="muted">
+          This web app talks to your Django API. Set the base URL, then Sign in.
+        </p>
+        <div class="row">
+          <label class="field">
+            <span>API Base URL</span>
+            <input id="apiBaseUrl" type="url" placeholder="http://127.0.0.1:8000/api" />
+          </label>
+          <button id="saveApiBaseUrl" class="btn">Save</button>
+        </div>
+        <p class="muted small">
+          Local default: <code>http://127.0.0.1:8000/api</code>
+        </p>
+      </section>
+
+      <section id="auth" class="card">
+        <div class="tabs">
+          <button id="tabLogin" class="tab tab-active" type="button">Sign in</button>
+          <button id="tabRegister" class="tab" type="button">Register</button>
+        </div>
+
+        <div id="loginPanel">
+          <div class="grid">
+            <label class="field">
+              <span>Username</span>
+              <input id="loginUsername" autocomplete="username" />
+            </label>
+            <label class="field">
+              <span>Password</span>
+              <input id="loginPassword" type="password" autocomplete="current-password" />
+            </label>
+          </div>
+          <div class="row">
+            <button id="loginBtn" class="btn btn-primary">Sign in</button>
+          </div>
+          <div id="authError" class="error" hidden></div>
+        </div>
+
+        <div id="registerPanel" hidden>
+          <div class="grid">
+            <label class="field">
+              <span>Username</span>
+              <input id="regUsername" autocomplete="username" />
+            </label>
+            <label class="field">
+              <span>Password (min 8 chars)</span>
+              <input id="regPassword" type="password" autocomplete="new-password" />
+            </label>
+            <label class="field">
+              <span>Email</span>
+              <input id="regEmail" type="email" autocomplete="email" />
+            </label>
+            <label class="field">
+              <span>First name</span>
+              <input id="regFirstName" autocomplete="given-name" />
+            </label>
+            <label class="field">
+              <span>Last name</span>
+              <input id="regLastName" autocomplete="family-name" />
+            </label>
+          </div>
+          <div class="row">
+            <button id="registerBtn" class="btn btn-primary">Create account</button>
+          </div>
+          <div id="registerError" class="error" hidden></div>
+        </div>
+      </section>
+
+      <section id="app" class="card" hidden>
+        <div class="split">
+          <div>
+            <h2>Inventory</h2>
+            <p id="meInfo" class="muted"></p>
+          </div>
+          <div class="row right">
+            <button id="refreshBtn" class="btn">Refresh</button>
+            <button id="logoutBtn" class="btn">Sign out</button>
+          </div>
+        </div>
+
+        <div id="staffArea" class="card-inner" hidden>
+          <h3>Categories (staff/admin)</h3>
+          <div class="row">
+            <label class="field grow">
+              <span>New category name</span>
+              <input id="newCategoryName" placeholder="e.g. Laptops" />
+            </label>
+            <button id="addCategoryBtn" class="btn">Add category</button>
+          </div>
+          <div class="row">
+            <label class="field">
+              <span>Selected category</span>
+              <select id="categorySelect"></select>
+            </label>
+          </div>
+        </div>
+
+        <div class="card-inner">
+          <h3>Add item</h3>
+          <div class="grid">
+            <label class="field">
+              <span>Name</span>
+              <input id="itemName" placeholder="e.g. Oscilloscope" />
+            </label>
+            <label class="field">
+              <span>Quantity</span>
+              <input id="itemQuantity" type="number" min="1" value="1" />
+            </label>
+            <label class="field">
+              <span>Location</span>
+              <input id="itemLocation" placeholder="e.g. Lab A" />
+            </label>
+            <label class="field">
+              <span>Serial number</span>
+              <input id="itemSerial" />
+            </label>
+            <label class="field full">
+              <span>Notes</span>
+              <textarea id="itemNotes" rows="2"></textarea>
+            </label>
+          </div>
+          <div class="row">
+            <button id="addItemBtn" class="btn btn-primary">Add item</button>
+          </div>
+          <p class="muted small">
+            Viewer users can add items, but cannot set categories (backend will hide category for viewers).
+          </p>
+        </div>
+
+        <div class="card-inner">
+          <div class="split">
+            <h3>Items</h3>
+            <div class="row right">
+              <button id="showActiveBtn" class="btn btn-small btn-primary">Active</button>
+              <button id="showArchivedBtn" class="btn btn-small">Archived (staff)</button>
+            </div>
+          </div>
+          <div id="itemsError" class="error" hidden></div>
+          <div class="table-wrap">
+            <table class="table">
+              <thead>
+                <tr>
+                  <th>Name</th>
+                  <th>Qty</th>
+                  <th>Category</th>
+                  <th>Location</th>
+                  <th>Serial</th>
+                  <th>Notes</th>
+                  <th>Actions</th>
+                </tr>
+              </thead>
+              <tbody id="itemsTbody"></tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <footer class="footer muted small">
+        Backend endpoints live under <code>/api/</code>. For deployment, host the backend separately and point this UI to it.
+      </footer>
+    </div>
+
+    <script src="./config.js"></script>
+    <script src="./app.js"></script>
+  </body>
+</html>
