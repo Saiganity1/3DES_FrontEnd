@@ -280,20 +280,39 @@ function updateRoleUi() {
 
   const authed = !!accessToken;
   const viewer = authed && me && !isStaff();
+  const staff = authed && me && isStaff() && !isAdmin();
+  const admin = authed && me && isAdmin();
 
   document.body.classList.toggle("role-viewer", !!viewer);
+  document.body.classList.toggle("role-staff", !!staff);
+  document.body.classList.toggle("role-admin", !!admin);
 
-  if (!viewer) {
+  if (!authed || !me) {
     setHidden(banner, true);
     banner.textContent = "";
     return;
   }
 
   banner.textContent = "";
-  banner.appendChild(createBadge("Viewer mode", "badge-muted"));
+
+  if (admin) {
+    banner.appendChild(createBadge("Admin", "badge-primary"));
+  } else if (staff) {
+    banner.appendChild(createBadge("Staff", "badge-muted"));
+  } else {
+    banner.appendChild(createBadge("Viewer", "badge-muted"));
+  }
+
   const msg = document.createElement("span");
-  msg.textContent = "Read-only access — you can browse items, but cannot add, edit, archive, or restore.";
+  if (admin) {
+    msg.textContent = "Full access — you can manage inventory and accounts.";
+  } else if (staff) {
+    msg.textContent = "Staff access — you can add, edit, archive, and restore items.";
+  } else {
+    msg.textContent = "Read-only access — you can browse items, but cannot add, edit, archive, or restore.";
+  }
   banner.appendChild(msg);
+
   setHidden(banner, false);
 }
 

@@ -75,9 +75,22 @@ code {
   padding: 10px 12px;
   margin: 12px 0 4px;
   border: 1px solid var(--border-soft);
+  border-left: 4px solid var(--primary);
   border-radius: 10px;
   background: #fafbfc;
   color: var(--muted);
+}
+
+.role-viewer .role-banner {
+  border-left-color: var(--muted);
+}
+
+.role-staff .role-banner {
+  border-left-color: var(--muted);
+}
+
+.role-admin .role-banner {
+  border-left-color: var(--primary);
 }
 
 .role-viewer #meInfo {
