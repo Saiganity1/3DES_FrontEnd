@@ -255,6 +255,13 @@ function createActionButton(label, onClick, { primary = false } = {}) {
   return btn;
 }
 
+function createBadge(text, className) {
+  const span = document.createElement("span");
+  span.className = className ? `badge ${className}` : "badge";
+  span.textContent = text;
+  return span;
+}
+
 function formatRole(u) {
   if (u.is_superuser) return "Admin";
   if (u.is_staff) return "Staff";
@@ -282,10 +289,17 @@ function renderAccountsTable() {
     tdEmail.textContent = escapeText(u.email || "");
 
     const tdRole = document.createElement("td");
-    tdRole.textContent = formatRole(u);
+    {
+      const role = formatRole(u);
+      const badgeClass = role === "Admin" ? "badge-primary" : role === "Staff" ? "badge-muted" : "";
+      tdRole.appendChild(createBadge(role, badgeClass));
+    }
 
     const tdStatus = document.createElement("td");
-    tdStatus.textContent = formatStatus(u);
+    {
+      const status = formatStatus(u);
+      tdStatus.appendChild(createBadge(status, u.is_active ? "badge-muted" : "badge-danger"));
+    }
 
     const tdActions = document.createElement("td");
     const actions = document.createElement("div");
