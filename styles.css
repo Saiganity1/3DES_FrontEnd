@@ -46,10 +46,14 @@ code {
 
 .header {
   display: flex;
-  align-items: baseline;
+  align-items: center;
   justify-content: space-between;
   gap: 16px;
   margin-bottom: 18px;
+  padding: 14px 16px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  background: var(--surface);
 }
 
 .session-bar {
@@ -87,7 +91,7 @@ code {
   border: 1px solid var(--border-soft);
   border-left: 4px solid var(--primary);
   border-radius: 10px;
-  background: #fafbfc;
+  background: var(--surface-2);
   color: var(--muted);
 }
 
@@ -103,6 +107,10 @@ code {
   border-left-color: var(--primary);
 }
 
+.role-admin .role-banner {
+  background: var(--primary-soft);
+}
+
 .role-viewer #meInfo {
   font-weight: 600;
 }
@@ -111,6 +119,10 @@ h1 {
   margin: 0;
   font-size: 1.75rem;
   letter-spacing: -0.02em;
+}
+
+.header h1 {
+  font-size: 1.4rem;
 }
 
 h2 {
@@ -209,7 +221,7 @@ h3 {
   background: #fff;
   color: #111;
   padding: 10px 12px;
-  border-radius: 8px;
+  border-radius: 999px;
   cursor: pointer;
   font-weight: 600;
   transition: background 120ms ease, border-color 120ms ease, transform 80ms ease;
@@ -258,6 +270,10 @@ h3 {
 .btn-small {
   padding: 8px 10px;
   font-size: 0.9rem;
+}
+
+.actions .btn {
+  border-radius: 10px;
 }
 
 .tabs {
@@ -316,6 +332,8 @@ h3 {
   top: 0;
   background: var(--surface-2);
   z-index: 1;
+  font-weight: 800;
+  letter-spacing: 0.01em;
 }
 
 .table tbody tr:hover {
