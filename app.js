@@ -222,6 +222,11 @@ function updateAppVisibility() {
   setHidden($("accountsBtn"), !authed || !isAdmin());
   if (!authed || !isAdmin()) setPage("inventory");
 
+  const itemsActionsTh = $("itemsActionsTh");
+  if (itemsActionsTh) {
+    setHidden(itemsActionsTh, !authed || !isStaff());
+  }
+
   const archivedBtn = $("showArchivedBtn");
   if (archivedBtn) {
     const staff = authed && isStaff();
@@ -461,7 +466,7 @@ function renderItemsTable() {
     const tr = document.createElement("tr");
     tr.className = "empty-row";
     const td = document.createElement("td");
-    td.colSpan = 7;
+    td.colSpan = isStaff() ? 7 : 6;
     if (itemViewMode === "archived" && !isStaff()) {
       td.textContent = "Archived items are staff/admin only.";
     } else {
@@ -477,42 +482,29 @@ function renderItemsTable() {
 
     const tdName = document.createElement("td");
     tdName.textContent = escapeText(it.name);
+    tdName.title = tdName.textContent;
 
     const tdQty = document.createElement("td");
     tdQty.textContent = escapeText(it.quantity);
 
     const tdCat = document.createElement("td");
     tdCat.textContent = escapeText(it.category_name || "");
+    tdCat.title = tdCat.textContent;
 
     const tdLoc = document.createElement("td");
     tdLoc.textContent = escapeText(it.location || "");
+    tdLoc.className = "cell cell-truncate cell-mono";
+    tdLoc.title = tdLoc.textContent;
 
     const tdSer = document.createElement("td");
     tdSer.textContent = escapeText(it.serial_number || "");
+    tdSer.className = "cell cell-truncate cell-mono";
+    tdSer.title = tdSer.textContent;
 
     const tdNotes = document.createElement("td");
     tdNotes.textContent = escapeText(it.notes || "");
-
-    const tdActions = document.createElement("td");
-    const actions = document.createElement("div");
-    actions.className = "actions";
-
-    if (isStaff()) {
-      if (itemViewMode === "active") {
-        actions.appendChild(
-          createActionButton("Edit", () => editItem(it), { primary: false })
-        );
-        actions.appendChild(
-          createActionButton("Archive", () => archiveItem(it), { primary: false })
-        );
-      } else {
-        actions.appendChild(createActionButton("Restore", () => restoreItem(it), { primary: true }));
-      }
-    } else {
-      actions.textContent = "—";
-    }
-
-    tdActions.appendChild(actions);
+    tdNotes.className = "cell cell-truncate";
+    tdNotes.title = tdNotes.textContent;
 
     tr.appendChild(tdName);
     tr.appendChild(tdQty);
@@ -520,7 +512,22 @@ function renderItemsTable() {
     tr.appendChild(tdLoc);
     tr.appendChild(tdSer);
     tr.appendChild(tdNotes);
-    tr.appendChild(tdActions);
+
+    if (isStaff()) {
+      const tdActions = document.createElement("td");
+      const actions = document.createElement("div");
+      actions.className = "actions";
+
+      if (itemViewMode === "active") {
+        actions.appendChild(createActionButton("Edit", () => editItem(it), { primary: false }));
+        actions.appendChild(createActionButton("Archive", () => archiveItem(it), { primary: false }));
+      } else {
+        actions.appendChild(createActionButton("Restore", () => restoreItem(it), { primary: true }));
+      }
+
+      tdActions.appendChild(actions);
+      tr.appendChild(tdActions);
+    }
 
     tbody.appendChild(tr);
   }
