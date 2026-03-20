@@ -211,6 +211,14 @@ function updateAppVisibility() {
   setHidden($("addItemSection"), !authed || !isStaff());
   setHidden($("accountsBtn"), !authed || !isAdmin());
   if (!authed || !isAdmin()) setPage("inventory");
+
+  const archivedBtn = $("showArchivedBtn");
+  if (archivedBtn) {
+    const staff = authed && isStaff();
+    archivedBtn.disabled = !staff;
+    archivedBtn.title = staff ? "" : "Staff/Admin only";
+  }
+
   updateSessionBar();
 }
 
@@ -218,6 +226,7 @@ async function loadMe() {
   if (!accessToken) {
     me = null;
     updateAppVisibility();
+    updateRoleUi();
     return;
   }
 
@@ -230,6 +239,8 @@ async function loadMe() {
   updateAppVisibility();
   $("meInfo").textContent =
     me ? `Signed in as ${me.username}. Role: ${isStaff() ? "Staff/Admin" : "Viewer"}.` : "";
+
+  updateRoleUi();
 }
 
 function renderCategorySelect() {
@@ -263,6 +274,29 @@ function createBadge(text, className) {
   return span;
 }
 
+function updateRoleUi() {
+  const banner = $("roleBanner");
+  if (!banner) return;
+
+  const authed = !!accessToken;
+  const viewer = authed && me && !isStaff();
+
+  document.body.classList.toggle("role-viewer", !!viewer);
+
+  if (!viewer) {
+    setHidden(banner, true);
+    banner.textContent = "";
+    return;
+  }
+
+  banner.textContent = "";
+  banner.appendChild(createBadge("Viewer mode", "badge-muted"));
+  const msg = document.createElement("span");
+  msg.textContent = "Read-only access — you can browse items, but cannot add, edit, archive, or restore.";
+  banner.appendChild(msg);
+  setHidden(banner, false);
+}
+
 function formatRole(u) {
   if (u.is_superuser) return "Admin";
   if (u.is_staff) return "Staff";
@@ -283,6 +317,17 @@ function renderAccountsTable() {
     return accounts.filter((u) => u.is_active);
   })();
 
+  if (filtered.length === 0) {
+    const tr = document.createElement("tr");
+    tr.className = "empty-row";
+    const td = document.createElement("td");
+    td.colSpan = 6;
+    td.textContent = "No accounts match this filter.";
+    tr.appendChild(td);
+    tbody.appendChild(tr);
+    return;
+  }
+
   for (const u of filtered) {
     const tr = document.createElement("tr");
 
@@ -298,7 +343,7 @@ function renderAccountsTable() {
     const tdRole = document.createElement("td");
     {
       const role = formatRole(u);
-      const badgeClass = role === "Admin" ? "badge-primary" : role === "Staff" ? "badge-muted" : "";
+      const badgeClass = role === "Admin" ? "badge-primary" : "badge-muted";
       tdRole.appendChild(createBadge(role, badgeClass));
     }
 
@@ -378,6 +423,21 @@ function renderItemsTable() {
   const tbody = $("itemsTbody");
   tbody.innerHTML = "";
   const list = itemViewMode === "archived" ? archivedItems : items;
+
+  if (!list || list.length === 0) {
+    const tr = document.createElement("tr");
+    tr.className = "empty-row";
+    const td = document.createElement("td");
+    td.colSpan = 7;
+    if (itemViewMode === "archived" && !isStaff()) {
+      td.textContent = "Archived items are staff/admin only.";
+    } else {
+      td.textContent = "No items to display.";
+    }
+    tr.appendChild(td);
+    tbody.appendChild(tr);
+    return;
+  }
 
   for (const it of list) {
     const tr = document.createElement("tr");
@@ -544,6 +604,7 @@ function handleLogout() {
   localStorage.removeItem(STORAGE_KEYS.access);
   localStorage.removeItem(STORAGE_KEYS.refresh);
   updateAppVisibility();
+  updateRoleUi();
   setAuthMode("login");
 }
 
