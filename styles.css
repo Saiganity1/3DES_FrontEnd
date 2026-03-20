@@ -68,6 +68,30 @@ body {
   background: var(--primary);
 }
 
+.brand-mark-sm {
+  width: 38px;
+  height: 38px;
+  border-radius: 12px;
+  font-size: 0.95rem;
+}
+
+.auth-form-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 12px;
+}
+
+.auth-form-title {
+  font-weight: 900;
+  letter-spacing: -0.02em;
+}
+
+.auth-form-subtitle {
+  color: var(--muted);
+  font-size: 0.95rem;
+}
+
 .brand-title {
   margin: 0;
   font-size: 1.6rem;
