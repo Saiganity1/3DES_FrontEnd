@@ -40,8 +40,14 @@ let items = [];
 let archivedItems = [];
 let itemViewMode = "active"; // active | archived
 
+let accounts = [];
+
 function isStaff() {
   return !!(me && (me.is_staff || me.is_superuser));
+}
+
+function isAdmin() {
+  return !!(me && me.is_superuser);
 }
 
 async function request(url, options = {}, { retryOn401 = true } = {}) {
@@ -102,10 +108,18 @@ async function apiGet(path) {
 }
 
 async function apiPost(path, body, { allowUnauthed = false } = {}) {
-  const headers = { "Content-Type": "application/json" };
-  const res = await fetch(`${apiBaseUrl}${path}`, {
+  if (allowUnauthed) {
+    const res = await fetch(`${apiBaseUrl}${path}`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(body),
+    });
+    if (!res.ok) throw await buildApiError(res);
+    return res.json();
+  }
+
+  const res = await request(`${apiBaseUrl}${path}`, {
     method: "POST",
-    headers: allowUnauthed ? headers : { ...headers, Authorization: `Bearer ${accessToken}` },
     body: JSON.stringify(body),
   });
   if (!res.ok) throw await buildApiError(res);
@@ -174,6 +188,10 @@ function updateAppVisibility() {
   setHidden($("app"), !authed);
   setHidden($("staffArea"), !authed || !isStaff());
   setHidden($("addItemSection"), !authed || !isStaff());
+  setHidden($("accountsBtn"), !authed || !isAdmin());
+  if (!authed || !isAdmin()) {
+    setHidden($("accountsSection"), true);
+  }
   updateSessionBar();
 }
 
@@ -217,6 +235,94 @@ function createActionButton(label, onClick, { primary = false } = {}) {
   btn.textContent = label;
   btn.addEventListener("click", onClick);
   return btn;
+}
+
+function formatRole(u) {
+  if (u.is_superuser) return "Admin";
+  if (u.is_staff) return "Staff";
+  return "Viewer";
+}
+
+function formatStatus(u) {
+  return u.is_active ? "Active" : "Taken down";
+}
+
+function renderAccountsTable() {
+  const tbody = $("accountsTbody");
+  tbody.innerHTML = "";
+
+  for (const u of accounts) {
+    const tr = document.createElement("tr");
+
+    const tdUser = document.createElement("td");
+    tdUser.textContent = escapeText(u.username);
+
+    const tdName = document.createElement("td");
+    tdName.textContent = `${escapeText(u.first_name || "")} ${escapeText(u.last_name || "")}`.trim();
+
+    const tdEmail = document.createElement("td");
+    tdEmail.textContent = escapeText(u.email || "");
+
+    const tdRole = document.createElement("td");
+    tdRole.textContent = formatRole(u);
+
+    const tdStatus = document.createElement("td");
+    tdStatus.textContent = formatStatus(u);
+
+    const tdActions = document.createElement("td");
+    const actions = document.createElement("div");
+    actions.className = "actions";
+
+    if (!u.is_superuser) {
+      if (!u.is_staff) {
+        actions.appendChild(createActionButton("Promote to staff", () => promoteAccount(u), { primary: true }));
+      }
+      if (u.is_active && me && u.id !== me.id) {
+        actions.appendChild(createActionButton("Take down", () => takeDownAccount(u)));
+      }
+    }
+
+    tdActions.appendChild(actions);
+
+    tr.appendChild(tdUser);
+    tr.appendChild(tdName);
+    tr.appendChild(tdEmail);
+    tr.appendChild(tdRole);
+    tr.appendChild(tdStatus);
+    tr.appendChild(tdActions);
+    tbody.appendChild(tr);
+  }
+}
+
+async function loadAccounts() {
+  showError($("accountsError"), "");
+  try {
+    accounts = await apiGet("/accounts/");
+    renderAccountsTable();
+  } catch (e) {
+    showError($("accountsError"), e.message || String(e));
+  }
+}
+
+async function promoteAccount(u) {
+  showError($("accountsError"), "");
+  try {
+    await apiPost(`/accounts/${u.id}/promote/`, {}, { allowUnauthed: false });
+    await loadAccounts();
+  } catch (e) {
+    showError($("accountsError"), e.message || String(e));
+  }
+}
+
+async function takeDownAccount(u) {
+  if (!confirm(`Take down account '${u.username}'?`)) return;
+  showError($("accountsError"), "");
+  try {
+    await apiPost(`/accounts/${u.id}/take_down/`, {}, { allowUnauthed: false });
+    await loadAccounts();
+  } catch (e) {
+    showError($("accountsError"), e.message || String(e));
+  }
 }
 
 function renderItemsTable() {
@@ -516,6 +622,15 @@ function init() {
   // App
   $("logoutBtn").addEventListener("click", handleLogout);
   $("refreshBtn").addEventListener("click", refreshAll);
+
+  // Accounts (admin)
+  $("accountsBtn").addEventListener("click", async () => {
+    if (!isAdmin()) return;
+    setHidden($("accountsSection"), false);
+    await loadAccounts();
+  });
+  $("accountsCloseBtn").addEventListener("click", () => setHidden($("accountsSection"), true));
+  $("accountsRefreshBtn").addEventListener("click", loadAccounts);
 
   // Staff
   $("addCategoryBtn").addEventListener("click", addCategory);

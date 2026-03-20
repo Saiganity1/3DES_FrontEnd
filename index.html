@@ -73,8 +73,35 @@
             <p id="meInfo" class="muted"></p>
           </div>
           <div class="row right">
+            <button id="accountsBtn" class="btn" hidden>Accounts</button>
             <button id="refreshBtn" class="btn">Refresh</button>
             <button id="logoutBtn" class="btn">Sign out</button>
+          </div>
+        </div>
+
+        <div id="accountsSection" class="card-inner" hidden>
+          <div class="split">
+            <h3>Accounts (admin)</h3>
+            <div class="row right">
+              <button id="accountsRefreshBtn" class="btn btn-small">Refresh accounts</button>
+              <button id="accountsCloseBtn" class="btn btn-small">Close</button>
+            </div>
+          </div>
+          <div id="accountsError" class="error" hidden></div>
+          <div class="table-wrap">
+            <table class="table">
+              <thead>
+                <tr>
+                  <th>Username</th>
+                  <th>Name</th>
+                  <th>Email</th>
+                  <th>Role</th>
+                  <th>Status</th>
+                  <th>Actions</th>
+                </tr>
+              </thead>
+              <tbody id="accountsTbody"></tbody>
+            </table>
           </div>
         </div>
 
