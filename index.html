@@ -4,7 +4,7 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>CIT Laboratory Equipment Inventory</title>
-    <link rel="stylesheet" href="./styles.css" />
+    <link rel="stylesheet" href="./styles.css?v=20260321" />
   </head>
   <body>
     <div class="container">
@@ -162,6 +162,14 @@
               <p class="muted">Manage registered accounts (admin only).</p>
             </div>
             <div class="row right">
+              <label class="field accounts-filter">
+                <span>Filter</span>
+                <select id="accountsFilter">
+                  <option value="active" selected>Active</option>
+                  <option value="taken_down">Taken down</option>
+                  <option value="all">All</option>
+                </select>
+              </label>
               <button id="accountsRefreshBtn" class="btn">Refresh</button>
               <button id="accountsBackBtn" class="btn">Back</button>
             </div>

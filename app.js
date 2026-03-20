@@ -41,6 +41,7 @@ let archivedItems = [];
 let itemViewMode = "active"; // active | archived
 
 let accounts = [];
+let accountsFilter = "active"; // active | taken_down | all
 
 function isStaff() {
   return !!(me && (me.is_staff || me.is_superuser));
@@ -276,7 +277,13 @@ function renderAccountsTable() {
   const tbody = $("accountsTbody");
   tbody.innerHTML = "";
 
-  for (const u of accounts) {
+  const filtered = (() => {
+    if (accountsFilter === "taken_down") return accounts.filter((u) => !u.is_active);
+    if (accountsFilter === "all") return accounts;
+    return accounts.filter((u) => u.is_active);
+  })();
+
+  for (const u of filtered) {
     const tr = document.createElement("tr");
 
     const tdUser = document.createElement("td");
@@ -339,6 +346,11 @@ async function loadAccounts() {
   } catch (e) {
     showError($("accountsError"), e.message || String(e));
   }
+}
+
+function setAccountsFilter(value) {
+  accountsFilter = value || "active";
+  renderAccountsTable();
 }
 
 async function promoteAccount(u) {
@@ -668,6 +680,7 @@ function init() {
   });
   $("accountsBackBtn").addEventListener("click", () => setPage("inventory"));
   $("accountsRefreshBtn").addEventListener("click", loadAccounts);
+  $("accountsFilter").addEventListener("change", (e) => setAccountsFilter(e.target.value));
 
   window.addEventListener("hashchange", () => {
     if (!accessToken || !isAdmin()) {
@@ -700,6 +713,9 @@ function init() {
   } else {
     setPage("inventory");
   }
+
+  // Default Accounts view filter
+  setAccountsFilter("active");
 
   // If token exists, load initial data
   if (accessToken) {
