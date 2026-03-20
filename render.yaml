@@ -1,0 +1,6 @@
+services:
+  - type: static
+    name: cit-inventory-web
+    plan: free
+    buildCommand: ""
+    staticPublishPath: .
