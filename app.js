@@ -50,6 +50,26 @@ function isAdmin() {
   return !!(me && me.is_superuser);
 }
 
+function setPage(page) {
+  const inventoryPage = $("inventoryPage");
+  const accountsPage = $("accountsPage");
+  if (!inventoryPage || !accountsPage) return;
+
+  if (page === "accounts") {
+    setHidden(inventoryPage, true);
+    setHidden(accountsPage, false);
+    if (location.hash !== "#accounts") location.hash = "#accounts";
+  } else {
+    setHidden(accountsPage, true);
+    setHidden(inventoryPage, false);
+    if (location.hash === "#accounts") location.hash = "#inventory";
+  }
+}
+
+function getInitialPage() {
+  return location.hash === "#accounts" ? "accounts" : "inventory";
+}
+
 async function request(url, options = {}, { retryOn401 = true } = {}) {
   const headers = new Headers(options.headers || {});
   if (!headers.has("Content-Type") && options.body != null) {
@@ -189,9 +209,7 @@ function updateAppVisibility() {
   setHidden($("staffArea"), !authed || !isStaff());
   setHidden($("addItemSection"), !authed || !isStaff());
   setHidden($("accountsBtn"), !authed || !isAdmin());
-  if (!authed || !isAdmin()) {
-    setHidden($("accountsSection"), true);
-  }
+  if (!authed || !isAdmin()) setPage("inventory");
   updateSessionBar();
 }
 
@@ -274,10 +292,15 @@ function renderAccountsTable() {
     actions.className = "actions";
 
     if (!u.is_superuser) {
-      if (!u.is_staff) {
-        actions.appendChild(createActionButton("Promote to staff", () => promoteAccount(u), { primary: true }));
-      }
-      if (u.is_active && me && u.id !== me.id) {
+      // If taken down, disable any mutating actions.
+      if (!u.is_active) {
+        const disabledBtn = createActionButton("Promote to staff", () => {}, { primary: true });
+        disabledBtn.disabled = true;
+        actions.appendChild(disabledBtn);
+      } else {
+        if (!u.is_staff) {
+          actions.appendChild(createActionButton("Promote to staff", () => promoteAccount(u), { primary: true }));
+        }
         actions.appendChild(createActionButton("Take down", () => takeDownAccount(u)));
       }
     }
@@ -626,11 +649,20 @@ function init() {
   // Accounts (admin)
   $("accountsBtn").addEventListener("click", async () => {
     if (!isAdmin()) return;
-    setHidden($("accountsSection"), false);
+    setPage("accounts");
     await loadAccounts();
   });
-  $("accountsCloseBtn").addEventListener("click", () => setHidden($("accountsSection"), true));
+  $("accountsBackBtn").addEventListener("click", () => setPage("inventory"));
   $("accountsRefreshBtn").addEventListener("click", loadAccounts);
+
+  window.addEventListener("hashchange", () => {
+    if (!accessToken || !isAdmin()) {
+      setPage("inventory");
+      return;
+    }
+    setPage(getInitialPage());
+    if (location.hash === "#accounts") loadAccounts();
+  });
 
   // Staff
   $("addCategoryBtn").addEventListener("click", addCategory);
@@ -647,6 +679,13 @@ function init() {
   });
 
   updateAppVisibility();
+
+  // Ensure initial page is consistent with URL hash.
+  if (accessToken && isAdmin()) {
+    setPage(getInitialPage());
+  } else {
+    setPage("inventory");
+  }
 
   // If token exists, load initial data
   if (accessToken) {

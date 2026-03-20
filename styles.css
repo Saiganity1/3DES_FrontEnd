@@ -145,6 +145,11 @@ h3 {
   background: #f6f7f9;
 }
 
+.btn:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+
 .btn-primary {
   border-color: #2563eb;
   background: #2563eb;
@@ -220,6 +225,25 @@ h3 {
   display: flex;
   gap: 8px;
   flex-wrap: wrap;
+}
+
+@media (max-width: 900px) {
+  .split {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .row.right {
+    justify-content: flex-start;
+  }
+
+  .grid {
+    grid-template-columns: 1fr;
+  }
+
+  .field {
+    min-width: 0;
+  }
 }
 
 .footer {

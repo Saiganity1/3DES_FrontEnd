@@ -67,45 +67,20 @@
       </section>
 
       <section id="app" class="card" hidden>
-        <div class="split">
-          <div>
-            <h2>Inventory</h2>
-            <p id="meInfo" class="muted"></p>
-          </div>
-          <div class="row right">
-            <button id="accountsBtn" class="btn" hidden>Accounts</button>
-            <button id="refreshBtn" class="btn">Refresh</button>
-            <button id="logoutBtn" class="btn">Sign out</button>
-          </div>
-        </div>
-
-        <div id="accountsSection" class="card-inner" hidden>
+        <div id="inventoryPage">
           <div class="split">
-            <h3>Accounts (admin)</h3>
+            <div>
+              <h2>Inventory</h2>
+              <p id="meInfo" class="muted"></p>
+            </div>
             <div class="row right">
-              <button id="accountsRefreshBtn" class="btn btn-small">Refresh accounts</button>
-              <button id="accountsCloseBtn" class="btn btn-small">Close</button>
+              <button id="accountsBtn" class="btn" hidden>Accounts</button>
+              <button id="refreshBtn" class="btn">Refresh</button>
+              <button id="logoutBtn" class="btn">Sign out</button>
             </div>
           </div>
-          <div id="accountsError" class="error" hidden></div>
-          <div class="table-wrap">
-            <table class="table">
-              <thead>
-                <tr>
-                  <th>Username</th>
-                  <th>Name</th>
-                  <th>Email</th>
-                  <th>Role</th>
-                  <th>Status</th>
-                  <th>Actions</th>
-                </tr>
-              </thead>
-              <tbody id="accountsTbody"></tbody>
-            </table>
-          </div>
-        </div>
 
-        <div id="staffArea" class="card-inner" hidden>
+          <div id="staffArea" class="card-inner" hidden>
           <h3>Categories (staff/admin)</h3>
           <div class="row">
             <label class="field grow">
@@ -120,9 +95,9 @@
               <select id="categorySelect"></select>
             </label>
           </div>
-        </div>
+          </div>
 
-        <div id="addItemSection" class="card-inner" hidden>
+          <div id="addItemSection" class="card-inner" hidden>
           <h3>Add item (staff/admin)</h3>
           <div class="grid">
             <label class="field">
@@ -150,9 +125,9 @@
             <button id="addItemBtn" class="btn btn-primary">Add item</button>
           </div>
           <p class="muted small">Viewer accounts are read-only.</p>
-        </div>
+          </div>
 
-        <div class="card-inner">
+          <div class="card-inner">
           <div class="split">
             <h3>Items</h3>
             <div class="row right">
@@ -175,6 +150,37 @@
                 </tr>
               </thead>
               <tbody id="itemsTbody"></tbody>
+            </table>
+          </div>
+          </div>
+        </div>
+
+        <div id="accountsPage" hidden>
+          <div class="split">
+            <div>
+              <h2>Accounts</h2>
+              <p class="muted">Manage registered accounts (admin only).</p>
+            </div>
+            <div class="row right">
+              <button id="accountsRefreshBtn" class="btn">Refresh</button>
+              <button id="accountsBackBtn" class="btn">Back</button>
+            </div>
+          </div>
+
+          <div id="accountsError" class="error" hidden></div>
+          <div class="table-wrap">
+            <table class="table">
+              <thead>
+                <tr>
+                  <th>Username</th>
+                  <th>Name</th>
+                  <th>Email</th>
+                  <th>Role</th>
+                  <th>Status</th>
+                  <th>Actions</th>
+                </tr>
+              </thead>
+              <tbody id="accountsTbody"></tbody>
             </table>
           </div>
         </div>
