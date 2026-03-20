@@ -173,6 +173,7 @@ function updateAppVisibility() {
   setHidden($("auth"), authed);
   setHidden($("app"), !authed);
   setHidden($("staffArea"), !authed || !isStaff());
+  setHidden($("addItemSection"), !authed || !isStaff());
   updateSessionBar();
 }
 
