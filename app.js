@@ -1,7 +1,6 @@
 /* global API_BASE_URL */
 
 const STORAGE_KEYS = {
-  apiBaseUrl: "inventory.apiBaseUrl",
   access: "inventory.accessToken",
   refresh: "inventory.refreshToken",
 };
@@ -32,14 +31,7 @@ function safeJsonParse(text) {
   }
 }
 
-function resolveApiBaseUrl() {
-  const saved = localStorage.getItem(STORAGE_KEYS.apiBaseUrl);
-  const fromConfig = (window.API_BASE_URL || "").trim();
-  const url = (saved || fromConfig || "http://127.0.0.1:8000/api").trim();
-  return url.replace(/\/+$/, "");
-}
-
-let apiBaseUrl = resolveApiBaseUrl();
+const apiBaseUrl = String(window.API_BASE_URL || "").trim().replace(/\/+$/, "");
 let accessToken = localStorage.getItem(STORAGE_KEYS.access) || "";
 let refreshToken = localStorage.getItem(STORAGE_KEYS.refresh) || "";
 let me = null;
@@ -511,22 +503,7 @@ function setItemViewMode(mode) {
   refreshAll();
 }
 
-function saveApiBaseUrl() {
-  const raw = $("apiBaseUrl").value.trim();
-  if (!raw) return;
-  apiBaseUrl = raw.replace(/\/+$/, "");
-  localStorage.setItem(STORAGE_KEYS.apiBaseUrl, apiBaseUrl);
-  updateSessionBar();
-}
-
 function init() {
-  // Setup API base URL input
-  $("apiBaseUrl").value = apiBaseUrl;
-  $("saveApiBaseUrl").addEventListener("click", () => {
-    saveApiBaseUrl();
-    alert("Saved API Base URL.");
-  });
-
   // Tabs
   $("tabLogin").addEventListener("click", () => setAuthMode("login"));
   $("tabRegister").addEventListener("click", () => setAuthMode("register"));
