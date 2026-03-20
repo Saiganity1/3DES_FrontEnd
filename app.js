@@ -181,15 +181,24 @@ function setAuthMode(mode) {
   const registerPanel = $("registerPanel");
   const tabLogin = $("tabLogin");
   const tabRegister = $("tabRegister");
+  const auth = $("auth");
+
+  if (!loginPanel || !registerPanel || !tabLogin || !tabRegister || !auth) return;
 
   if (mode === "register") {
-    setHidden(loginPanel, true);
-    setHidden(registerPanel, false);
+    auth.dataset.mode = "register";
+    loginPanel.classList.remove("auth-panel-active");
+    registerPanel.classList.add("auth-panel-active");
+    loginPanel.setAttribute("aria-hidden", "true");
+    registerPanel.setAttribute("aria-hidden", "false");
     tabLogin.classList.remove("tab-active");
     tabRegister.classList.add("tab-active");
   } else {
-    setHidden(loginPanel, false);
-    setHidden(registerPanel, true);
+    auth.dataset.mode = "login";
+    registerPanel.classList.remove("auth-panel-active");
+    loginPanel.classList.add("auth-panel-active");
+    registerPanel.setAttribute("aria-hidden", "true");
+    loginPanel.setAttribute("aria-hidden", "false");
     tabRegister.classList.remove("tab-active");
     tabLogin.classList.add("tab-active");
   }
@@ -199,8 +208,9 @@ function setAuthMode(mode) {
 
 function updateSessionBar() {
   const sessionBar = $("sessionBar");
-  const who = me ? `${me.username}${isStaff() ? " (staff)" : ""}` : "signed out";
-  sessionBar.textContent = `API: ${apiBaseUrl} | Session: ${who}`;
+  if (!sessionBar) return;
+  const who = me ? `${me.username}${isAdmin() ? " (admin)" : isStaff() ? " (staff)" : " (viewer)"}` : "signed out";
+  sessionBar.textContent = `Session: ${who}`;
 }
 
 function updateAppVisibility() {

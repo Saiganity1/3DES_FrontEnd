@@ -4,7 +4,7 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>CIT Laboratory Equipment Inventory</title>
-    <link rel="stylesheet" href="./styles.css?v=20260321-5" />
+    <link rel="stylesheet" href="./styles.css?v=20260321-6" />
   </head>
   <body>
     <div class="container">
@@ -13,56 +13,73 @@
         <div id="sessionBar" class="session-bar"></div>
       </header>
 
-      <section id="auth" class="card">
-        <div class="tabs">
-          <button id="tabLogin" class="tab tab-active" type="button">Sign in</button>
-          <button id="tabRegister" class="tab" type="button">Register</button>
-        </div>
+      <section id="auth" class="card auth-card" data-mode="login">
+        <div class="auth-shell">
+          <div class="auth-brand">
+            <div class="brand-mark">CIT</div>
+            <h2 class="brand-title">Inventory Management</h2>
+            <p class="brand-subtitle">Track, organize, and manage laboratory equipment with role-based access.</p>
+            <div class="brand-points">
+              <div class="brand-point">Secure sign-in with roles (Admin / Staff / Viewer)</div>
+              <div class="brand-point">Clean tables and fast refresh</div>
+              <div class="brand-point">Professional UI for assessments</div>
+            </div>
+          </div>
 
-        <div id="loginPanel">
-          <div class="grid">
-            <label class="field">
-              <span>Username</span>
-              <input id="loginUsername" autocomplete="username" />
-            </label>
-            <label class="field">
-              <span>Password</span>
-              <input id="loginPassword" type="password" autocomplete="current-password" />
-            </label>
-          </div>
-          <div class="row">
-            <button id="loginBtn" class="btn btn-primary">Sign in</button>
-          </div>
-          <div id="authError" class="error" hidden></div>
-        </div>
+          <div class="auth-form">
+            <div class="tabs">
+              <button id="tabLogin" class="tab tab-active" type="button">Sign in</button>
+              <button id="tabRegister" class="tab" type="button">Register</button>
+            </div>
 
-        <div id="registerPanel" hidden>
-          <div class="grid">
-            <label class="field">
-              <span>Username</span>
-              <input id="regUsername" autocomplete="username" />
-            </label>
-            <label class="field">
-              <span>Password (min 8 chars)</span>
-              <input id="regPassword" type="password" autocomplete="new-password" />
-            </label>
-            <label class="field">
-              <span>Email</span>
-              <input id="regEmail" type="email" autocomplete="email" />
-            </label>
-            <label class="field">
-              <span>First name</span>
-              <input id="regFirstName" autocomplete="given-name" />
-            </label>
-            <label class="field">
-              <span>Last name</span>
-              <input id="regLastName" autocomplete="family-name" />
-            </label>
+            <div class="auth-panels">
+              <div id="loginPanel" class="auth-panel auth-panel-active" aria-hidden="false">
+                <div class="grid">
+                  <label class="field">
+                    <span>Username</span>
+                    <input id="loginUsername" autocomplete="username" />
+                  </label>
+                  <label class="field">
+                    <span>Password</span>
+                    <input id="loginPassword" type="password" autocomplete="current-password" />
+                  </label>
+                </div>
+                <div class="row">
+                  <button id="loginBtn" class="btn btn-primary">Sign in</button>
+                </div>
+                <div id="authError" class="error" hidden></div>
+              </div>
+
+              <div id="registerPanel" class="auth-panel" aria-hidden="true">
+                <div class="grid">
+                  <label class="field">
+                    <span>Username</span>
+                    <input id="regUsername" autocomplete="username" />
+                  </label>
+                  <label class="field">
+                    <span>Password (min 8 chars)</span>
+                    <input id="regPassword" type="password" autocomplete="new-password" />
+                  </label>
+                  <label class="field">
+                    <span>Email</span>
+                    <input id="regEmail" type="email" autocomplete="email" />
+                  </label>
+                  <label class="field">
+                    <span>First name</span>
+                    <input id="regFirstName" autocomplete="given-name" />
+                  </label>
+                  <label class="field">
+                    <span>Last name</span>
+                    <input id="regLastName" autocomplete="family-name" />
+                  </label>
+                </div>
+                <div class="row">
+                  <button id="registerBtn" class="btn btn-primary">Create account</button>
+                </div>
+                <div id="registerError" class="error" hidden></div>
+              </div>
+            </div>
           </div>
-          <div class="row">
-            <button id="registerBtn" class="btn btn-primary">Create account</button>
-          </div>
-          <div id="registerError" class="error" hidden></div>
         </div>
       </section>
 
@@ -195,12 +212,10 @@
         </div>
       </section>
 
-      <footer class="footer muted small">
-        Backend endpoints live under <code>/api/</code>. For deployment, host the backend separately and point this UI to it.
-      </footer>
+      <footer class="footer muted small"></footer>
     </div>
 
     <script src="./config.js"></script>
-    <script src="./app.js?v=20260321-5"></script>
+    <script src="./app.js?v=20260321-6"></script>
   </body>
 </html>
