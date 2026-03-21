@@ -493,6 +493,7 @@ function renderItemsTable() {
 
   for (const it of list) {
     const tr = document.createElement("tr");
+    tr.dataset.itemId = String(it.id);
 
     const tdName = document.createElement("td");
     tdName.dataset.label = "Name";
@@ -564,6 +565,62 @@ function renderItemsTable() {
 
     tbody.appendChild(tr);
   }
+}
+
+function buildDetailsRow(label, value) {
+  const labelEl = document.createElement("div");
+  labelEl.className = "details-label";
+  labelEl.textContent = label;
+
+  const valueEl = document.createElement("div");
+  valueEl.className = "details-value";
+  valueEl.textContent = String(value ?? "");
+
+  return [labelEl, valueEl];
+}
+
+function openItemDetails(it) {
+  const modal = $("itemDetailsModal");
+  const title = $("itemDetailsTitle");
+  const body = $("itemDetailsBody");
+  const closeBtn = $("itemDetailsCloseBtn");
+  if (!modal || !title || !body || !closeBtn) return;
+
+  title.textContent = it?.name ? `Item: ${it.name}` : "Item details";
+  body.innerHTML = "";
+
+  const grid = document.createElement("div");
+  grid.className = "details-grid";
+
+  const rows = [
+    ["Name", it?.name || ""],
+    ["Quantity", it?.quantity ?? ""],
+    ["Category", it?.category_name || ""],
+    ["Posted by", it?.created_by || ""],
+    ["Posted at", formatDateTime(it?.created_at)],
+    ["Location", it?.location || ""],
+    ["Serial", it?.serial_number || ""],
+    ["Notes", it?.notes || ""],
+  ];
+
+  for (const [label, value] of rows) {
+    const [l, v] = buildDetailsRow(label, value);
+    grid.appendChild(l);
+    grid.appendChild(v);
+  }
+
+  body.appendChild(grid);
+
+  modal.hidden = false;
+  modal.setAttribute("aria-hidden", "false");
+  closeBtn.focus();
+}
+
+function closeItemDetails() {
+  const modal = $("itemDetailsModal");
+  if (!modal) return;
+  modal.hidden = true;
+  modal.setAttribute("aria-hidden", "true");
 }
 
 async function refreshAll() {
@@ -803,6 +860,35 @@ function init() {
   // App
   $("logoutBtn").addEventListener("click", handleLogout);
   $("refreshBtn").addEventListener("click", refreshAll);
+
+  // Viewer: click item row to view details
+  const tbody = $("itemsTbody");
+  if (tbody) {
+    tbody.addEventListener("click", (e) => {
+      if (isStaff()) return;
+      const target = e.target;
+      if (target && target.closest && target.closest("button")) return;
+      const tr = target && target.closest ? target.closest("tr") : null;
+      const itemId = tr && tr.dataset ? tr.dataset.itemId : "";
+      if (!itemId) return;
+
+      const list = itemViewMode === "archived" ? archivedItems : items;
+      const it = (list || []).find((x) => String(x.id) === String(itemId));
+      if (!it) return;
+      openItemDetails(it);
+    });
+  }
+
+  const detailsClose = $("itemDetailsCloseBtn");
+  if (detailsClose) {
+    detailsClose.addEventListener("click", closeItemDetails);
+  }
+
+  document.addEventListener("keydown", (e) => {
+    if (e.key !== "Escape") return;
+    const modal = $("itemDetailsModal");
+    if (modal && !modal.hidden) closeItemDetails();
+  });
 
   // Accounts (admin)
   $("accountsBtn").addEventListener("click", async () => {
