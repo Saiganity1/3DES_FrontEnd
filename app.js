@@ -370,15 +370,19 @@ function renderAccountsTable() {
     const tr = document.createElement("tr");
 
     const tdUser = document.createElement("td");
+    tdUser.dataset.label = "Username";
     tdUser.textContent = escapeText(u.username);
 
     const tdName = document.createElement("td");
+    tdName.dataset.label = "Name";
     tdName.textContent = `${escapeText(u.first_name || "")} ${escapeText(u.last_name || "")}`.trim();
 
     const tdEmail = document.createElement("td");
+    tdEmail.dataset.label = "Email";
     tdEmail.textContent = escapeText(u.email || "");
 
     const tdRole = document.createElement("td");
+    tdRole.dataset.label = "Role";
     {
       const role = formatRole(u);
       const badgeClass = role === "Admin" ? "badge-primary" : "badge-muted";
@@ -386,12 +390,14 @@ function renderAccountsTable() {
     }
 
     const tdStatus = document.createElement("td");
+    tdStatus.dataset.label = "Status";
     {
       const status = formatStatus(u);
       tdStatus.appendChild(createBadge(status, u.is_active ? "badge-muted" : "badge-danger"));
     }
 
     const tdActions = document.createElement("td");
+    tdActions.dataset.label = "Actions";
     const actions = document.createElement("div");
     actions.className = "actions";
 
@@ -481,27 +487,33 @@ function renderItemsTable() {
     const tr = document.createElement("tr");
 
     const tdName = document.createElement("td");
+    tdName.dataset.label = "Name";
     tdName.textContent = escapeText(it.name);
     tdName.title = tdName.textContent;
 
     const tdQty = document.createElement("td");
+    tdQty.dataset.label = "Qty";
     tdQty.textContent = escapeText(it.quantity);
 
     const tdCat = document.createElement("td");
+    tdCat.dataset.label = "Category";
     tdCat.textContent = escapeText(it.category_name || "");
     tdCat.title = tdCat.textContent;
 
     const tdLoc = document.createElement("td");
+    tdLoc.dataset.label = "Location";
     tdLoc.textContent = escapeText(it.location || "");
     tdLoc.className = "cell cell-truncate cell-mono";
     tdLoc.title = tdLoc.textContent;
 
     const tdSer = document.createElement("td");
+    tdSer.dataset.label = "Serial";
     tdSer.textContent = escapeText(it.serial_number || "");
     tdSer.className = "cell cell-truncate cell-mono";
     tdSer.title = tdSer.textContent;
 
     const tdNotes = document.createElement("td");
+    tdNotes.dataset.label = "Notes";
     tdNotes.textContent = escapeText(it.notes || "");
     tdNotes.className = "cell cell-truncate";
     tdNotes.title = tdNotes.textContent;
@@ -515,6 +527,7 @@ function renderItemsTable() {
 
     if (isStaff()) {
       const tdActions = document.createElement("td");
+      tdActions.dataset.label = "Actions";
       const actions = document.createElement("div");
       actions.className = "actions";
 

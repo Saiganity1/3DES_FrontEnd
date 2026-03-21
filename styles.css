@@ -572,3 +572,67 @@ h3 {
     min-width: auto;
   }
 }
+
+@media (max-width: 640px) {
+  .table-wrap {
+    overflow: visible;
+  }
+
+  .table {
+    table-layout: auto;
+  }
+
+  .table thead {
+    display: none;
+  }
+
+  .table,
+  .table tbody,
+  .table tr,
+  .table td {
+    display: block;
+    width: 100%;
+  }
+
+  .table tr {
+    border: 1px solid var(--border-soft);
+    border-radius: 10px;
+    padding: 10px;
+    margin-bottom: 12px;
+    background: var(--surface);
+  }
+
+  .table td {
+    border: 0;
+    padding: 6px 0;
+    overflow: visible;
+    text-overflow: clip;
+    white-space: normal;
+    overflow-wrap: anywhere;
+  }
+
+  .table .empty-row td {
+    padding: 12px 0;
+  }
+
+  .table .empty-row td::before {
+    display: none;
+    content: "";
+  }
+
+  .cell-truncate {
+    max-width: none;
+  }
+
+  .table td::before {
+    content: attr(data-label);
+    display: block;
+    font-weight: 800;
+    color: var(--label);
+    margin-bottom: 2px;
+  }
+
+  .table td[data-label="Actions"]::before {
+    margin-bottom: 6px;
+  }
+}
