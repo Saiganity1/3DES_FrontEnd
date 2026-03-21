@@ -449,7 +449,7 @@ h3 {
 .table {
   width: 100%;
   border-collapse: collapse;
-  table-layout: fixed;
+  table-layout: auto;
   font-size: 0.95rem;
 }
 
@@ -462,9 +462,8 @@ h3 {
 }
 
 .table td {
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
+  white-space: normal;
+  overflow-wrap: anywhere;
 }
 
 .cell-mono {
@@ -473,7 +472,7 @@ h3 {
 }
 
 .cell-truncate {
-  max-width: 1px;
+  max-width: none;
 }
 
 .table th {
