@@ -273,6 +273,14 @@ function escapeText(s) {
   return String(s ?? "");
 }
 
+function formatDateTime(value) {
+  const s = String(value ?? "").trim();
+  if (!s) return "";
+  const d = new Date(s);
+  if (Number.isNaN(d.getTime())) return s;
+  return d.toLocaleString();
+}
+
 function createActionButton(label, onClick, { primary = false, danger = false } = {}) {
   const btn = document.createElement("button");
   btn.type = "button";
@@ -472,7 +480,7 @@ function renderItemsTable() {
     const tr = document.createElement("tr");
     tr.className = "empty-row";
     const td = document.createElement("td");
-    td.colSpan = isStaff() ? 7 : 6;
+    td.colSpan = isStaff() ? 9 : 8;
     if (itemViewMode === "archived" && !isStaff()) {
       td.textContent = "Archived items are staff/admin only.";
     } else {
@@ -500,6 +508,16 @@ function renderItemsTable() {
     tdCat.textContent = escapeText(it.category_name || "");
     tdCat.title = tdCat.textContent;
 
+    const tdPostedBy = document.createElement("td");
+    tdPostedBy.dataset.label = "Posted by";
+    tdPostedBy.textContent = escapeText(it.created_by || "");
+    tdPostedBy.title = tdPostedBy.textContent;
+
+    const tdPostedAt = document.createElement("td");
+    tdPostedAt.dataset.label = "Posted at";
+    tdPostedAt.textContent = formatDateTime(it.created_at);
+    tdPostedAt.title = tdPostedAt.textContent;
+
     const tdLoc = document.createElement("td");
     tdLoc.dataset.label = "Location";
     tdLoc.textContent = escapeText(it.location || "");
@@ -521,6 +539,8 @@ function renderItemsTable() {
     tr.appendChild(tdName);
     tr.appendChild(tdQty);
     tr.appendChild(tdCat);
+    tr.appendChild(tdPostedBy);
+    tr.appendChild(tdPostedAt);
     tr.appendChild(tdLoc);
     tr.appendChild(tdSer);
     tr.appendChild(tdNotes);
