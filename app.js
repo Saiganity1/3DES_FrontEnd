@@ -371,6 +371,12 @@ function renderAccountsTable() {
     td.textContent = "No accounts match this filter.";
     tr.appendChild(td);
     tbody.appendChild(tr);
+    return;
+  }
+
+  for (const u of filtered) {
+    const tr = document.createElement("tr");
+
     const tdUser = document.createElement("td");
     tdUser.dataset.label = "Username";
     tdUser.textContent = escapeText(u.username);
@@ -413,6 +419,14 @@ function renderAccountsTable() {
         if (!u.is_staff) {
           actions.appendChild(createActionButton("Promote to staff", () => promoteAccount(u), { primary: true }));
         }
+
+        // Admin -> Accounts: grant/revoke decrypt permission for selected users.
+        if (u.can_decrypt_item_details) {
+          actions.appendChild(createActionButton("Revoke decrypt", () => revokeDecrypt(u)));
+        } else {
+          actions.appendChild(createActionButton("Allow decrypt", () => grantDecrypt(u)));
+        }
+
         actions.appendChild(createActionButton("Take down", () => takeDownAccount(u), { danger: true }));
       }
     }
@@ -489,12 +503,6 @@ function renderItemsTable() {
   const tbody = $("itemsTbody");
   tbody.innerHTML = "";
   const list = itemViewMode === "archived" ? archivedItems : items;
-          // Admin-only: allow decrypt permission for specific users (keeps them read-only).
-          if (u.can_decrypt_item_details) {
-            actions.appendChild(createActionButton("Revoke decrypt", () => revokeDecrypt(u), { primary: false }));
-          } else {
-            actions.appendChild(createActionButton("Allow decrypt", () => grantDecrypt(u), { primary: false }));
-          }
 
   if (!list || list.length === 0) {
     const tr = document.createElement("tr");
