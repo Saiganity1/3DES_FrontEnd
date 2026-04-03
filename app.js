@@ -557,14 +557,6 @@ function renderItemsTable() {
     tdNotes.className = "cell cell-truncate";
     tdNotes.title = tdNotes.textContent;
 
-        // Admin-only: allow decrypt permission for specific users (keeps them read-only).
-        if (u.can_decrypt_item_details) {
-          actions.appendChild(createActionButton("Revoke decrypt", () => revokeDecrypt(u), { primary: false }));
-        } else {
-          actions.appendChild(createActionButton("Allow decrypt", () => grantDecrypt(u), { primary: false }));
-        }
-
-
     tr.appendChild(tdName);
     tr.appendChild(tdQty);
     tr.appendChild(tdCat);
