@@ -51,6 +51,10 @@ function isAdmin() {
   return !!(me && me.is_superuser);
 }
 
+function canDecrypt() {
+  return !!(me && me.can_decrypt_item_details);
+}
+
 function setPage(page) {
   const inventoryPage = $("inventoryPage");
   const accountsPage = $("accountsPage");
@@ -508,7 +512,7 @@ function renderItemsTable() {
     const tr = document.createElement("tr");
     tr.className = "empty-row";
     const td = document.createElement("td");
-    td.colSpan = isStaff() ? 9 : 8;
+    td.colSpan = isStaff() || canDecrypt() ? 9 : 8;
     if (itemViewMode === "archived" && !isStaff()) {
       td.textContent = "Archived items are staff/admin only.";
     } else {
@@ -574,17 +578,35 @@ function renderItemsTable() {
     tr.appendChild(tdSer);
     tr.appendChild(tdNotes);
 
-    if (isStaff()) {
+    if (isStaff() || canDecrypt()) {
       const tdActions = document.createElement("td");
       tdActions.dataset.label = "Actions";
       const actions = document.createElement("div");
       actions.className = "actions";
 
-      if (itemViewMode === "active") {
-        actions.appendChild(createActionButton("Edit", () => editItem(it), { primary: false }));
-        actions.appendChild(createActionButton("Archive", () => archiveItem(it), { primary: false }));
+      if (isStaff()) {
+        if (itemViewMode === "active") {
+          actions.appendChild(createActionButton("Edit", () => editItem(it), { primary: false }));
+          actions.appendChild(createActionButton("Archive", () => archiveItem(it), { primary: false }));
+        } else {
+          actions.appendChild(createActionButton("Restore", () => restoreItem(it), { primary: true }));
+        }
       } else {
-        actions.appendChild(createActionButton("Restore", () => restoreItem(it), { primary: true }));
+        // Approved viewer: decrypt on demand.
+        actions.appendChild(
+          createActionButton(
+            "Decrypt",
+            async () => {
+              try {
+                const dec = await apiGet(`/items/${it.id}/decrypt/`);
+                openItemDetails(dec);
+              } catch (e) {
+                alert(e.message || String(e));
+              }
+            },
+            { primary: true }
+          )
+        );
       }
 
       tdActions.appendChild(actions);
