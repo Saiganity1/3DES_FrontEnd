@@ -26,11 +26,16 @@
 body {
   margin: 0;
   font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
-  background: var(--bg);
+  background: linear-gradient(180deg, var(--surface-2) 0%, var(--bg) 38%, var(--bg) 100%);
   color: var(--text);
   line-height: 1.45;
   -webkit-font-smoothing: antialiased;
   text-rendering: optimizeLegibility;
+}
+
+:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 3px var(--primary-soft);
 }
 
 /* Modern auth landing look */
@@ -187,7 +192,7 @@ code {
   padding: 14px 16px;
   border: 1px solid var(--border);
   border-radius: var(--radius);
-  background: var(--surface);
+  background: linear-gradient(180deg, var(--surface) 0%, var(--surface-2) 140%);
 }
 
 .session-bar {
@@ -495,6 +500,10 @@ h3 {
 
 .table tbody tr:nth-child(even) {
   background: var(--surface-2);
+}
+
+.table tbody tr td:first-child {
+  font-weight: 650;
 }
 
 .table .empty-row td {
