@@ -4,6 +4,7 @@ const STORAGE_KEYS = {
   access: "inventory.accessToken",
   refresh: "inventory.refreshToken",
   mainView: "inventory.mainView", // items | manage
+  manageMode: "inventory.manageMode", // categories | addItem
 };
 
 function $(id) {
@@ -24,6 +25,40 @@ function showError(el, message) {
   el.textContent = message;
 }
 
+function toast(message, { type = "info", timeoutMs = 3200 } = {}) {
+  const stack = $("toastStack");
+  if (!stack) return;
+
+  const t = document.createElement("div");
+  t.className = `toast toast-${type}`;
+
+  const msg = document.createElement("div");
+  msg.className = "toast-message";
+  msg.textContent = String(message || "");
+
+  const close = document.createElement("button");
+  close.type = "button";
+  close.className = "toast-close";
+  close.textContent = "Close";
+
+  const remove = () => {
+    t.classList.remove("toast-show");
+    window.setTimeout(() => t.remove(), 200);
+  };
+
+  close.addEventListener("click", remove);
+  t.appendChild(msg);
+  t.appendChild(close);
+  stack.appendChild(t);
+
+  // trigger transition
+  requestAnimationFrame(() => t.classList.add("toast-show"));
+
+  if (timeoutMs > 0) {
+    window.setTimeout(remove, timeoutMs);
+  }
+}
+
 function safeJsonParse(text) {
   try {
     return JSON.parse(text);
@@ -42,6 +77,10 @@ let archivedItems = [];
 let itemViewMode = "active"; // active | archived
 
 let mainViewMode = localStorage.getItem(STORAGE_KEYS.mainView) || "manage"; // items | manage
+let manageMode = localStorage.getItem(STORAGE_KEYS.manageMode) || "categories"; // categories | addItem
+
+let itemsSearchQuery = "";
+let itemsCategoryQuery = "__all__";
 
 let accounts = [];
 let accountsFilter = "active"; // active | taken_down | all
@@ -66,6 +105,68 @@ function setMainViewMode(mode) {
   mainViewMode = normalizeMainViewMode(mode);
   localStorage.setItem(STORAGE_KEYS.mainView, mainViewMode);
   updateAppVisibility();
+}
+
+function normalizeManageMode(value) {
+  return value === "addItem" ? "addItem" : "categories";
+}
+
+function setManageMode(mode) {
+  manageMode = normalizeManageMode(mode);
+  localStorage.setItem(STORAGE_KEYS.manageMode, manageMode);
+  updateAppVisibility();
+}
+
+function normalizeText(value) {
+  return String(value ?? "")
+    .trim()
+    .toLowerCase();
+}
+
+function getFilteredItems(list) {
+  const q = normalizeText(itemsSearchQuery);
+  const cat = String(itemsCategoryQuery || "__all__");
+  return (list || []).filter((it) => {
+    if (cat && cat !== "__all__") {
+      if (String(it.category_name || "") !== cat) return false;
+    }
+    if (!q) return true;
+
+    const hay = [
+      it.name,
+      it.category_name,
+      it.created_by,
+      it.location,
+      it.serial_number,
+      it.notes,
+    ]
+      .map(normalizeText)
+      .join("\n");
+    return hay.includes(q);
+  });
+}
+
+function renderItemFilters(list) {
+  const sel = $("itemsCategoryFilter");
+  if (!sel) return;
+
+  const current = itemsCategoryQuery || "__all__";
+  const categoriesSet = new Set();
+  for (const it of list || []) {
+    const name = String(it.category_name || "").trim();
+    if (name) categoriesSet.add(name);
+  }
+  const options = ["__all__", ...Array.from(categoriesSet).sort((a, b) => a.localeCompare(b))];
+
+  sel.innerHTML = "";
+  for (const value of options) {
+    const opt = document.createElement("option");
+    opt.value = value;
+    opt.textContent = value === "__all__" ? "All categories" : value;
+    sel.appendChild(opt);
+  }
+  sel.value = options.includes(current) ? current : "__all__";
+  itemsCategoryQuery = sel.value;
 }
 
 function setPage(page) {
@@ -255,6 +356,19 @@ function updateAppVisibility() {
       const manageActive = effectiveMainView === "manage";
       categoriesViewBtn.classList.toggle("btn-primary", manageActive);
       itemsViewBtn.classList.toggle("btn-primary", !manageActive);
+    }
+
+    if (staff && effectiveMainView === "manage") {
+      const m = normalizeManageMode(manageMode);
+      setHidden($("staffArea"), m !== "categories");
+      setHidden($("addItemSection"), m !== "addItem");
+
+      const manageCategoriesBtn = $("manageCategoriesBtn");
+      const manageAddItemBtn = $("manageAddItemBtn");
+      if (manageCategoriesBtn && manageAddItemBtn) {
+        manageCategoriesBtn.classList.toggle("btn-primary", m === "categories");
+        manageAddItemBtn.classList.toggle("btn-primary", m === "addItem");
+      }
     }
   } else {
     setHidden($("staffArea"), !staff);
@@ -545,6 +659,8 @@ function renderItemsTable() {
   const tbody = $("itemsTbody");
   tbody.innerHTML = "";
   const list = itemViewMode === "archived" ? archivedItems : items;
+  const filtered = getFilteredItems(list);
+  renderItemFilters(list);
 
   if (!list || list.length === 0) {
     const tr = document.createElement("tr");
@@ -561,9 +677,26 @@ function renderItemsTable() {
     return;
   }
 
-  for (const it of list) {
+  if (!filtered || filtered.length === 0) {
+    const tr = document.createElement("tr");
+    tr.className = "empty-row";
+    const td = document.createElement("td");
+    td.colSpan = isStaff() || canDecrypt() ? 9 : 8;
+    td.textContent = "No matching items.";
+    tr.appendChild(td);
+    tbody.appendChild(tr);
+    return;
+  }
+
+  for (const it of filtered) {
     const tr = document.createElement("tr");
     tr.dataset.itemId = String(it.id);
+
+    if (!isStaff()) {
+      tr.tabIndex = 0;
+      tr.setAttribute("role", "button");
+      tr.setAttribute("aria-label", `View details for ${String(it.name || "item")}`);
+    }
 
     const tdName = document.createElement("td");
     tdName.dataset.label = "Name";
@@ -639,7 +772,7 @@ function renderItemsTable() {
                 const dec = await apiGet(`/items/${it.id}/decrypt/`);
                 openItemDetails(dec);
               } catch (e) {
-                alert(e.message || String(e));
+                toast(e.message || String(e), { type: "danger" });
               }
             },
             { primary: true }
@@ -674,6 +807,8 @@ function openItemDetails(it) {
   const closeBtn = $("itemDetailsCloseBtn");
   if (!modal || !title || !body || !closeBtn) return;
 
+  const previouslyFocused = document.activeElement;
+
   title.textContent = it?.name ? `Item: ${it.name}` : "Item details";
   body.innerHTML = "";
 
@@ -686,6 +821,8 @@ function openItemDetails(it) {
     ["Category", it?.category_name || ""],
     ["Posted by", it?.created_by || ""],
     ["Posted at", formatDateTime(it?.created_at)],
+    ["Last updated by", it?.updated_by || ""],
+    ["Last updated at", formatDateTime(it?.updated_at)],
     ["Location", it?.location || ""],
     ["Serial", it?.serial_number || ""],
     ["Notes", it?.notes || ""],
@@ -701,6 +838,46 @@ function openItemDetails(it) {
 
   modal.hidden = false;
   modal.setAttribute("aria-hidden", "false");
+
+  const focusableSelector =
+    'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])';
+  const focusables = Array.from(modal.querySelectorAll(focusableSelector)).filter(
+    (el) => el && !el.hasAttribute("disabled") && el.getAttribute("aria-hidden") !== "true"
+  );
+  const first = focusables[0] || closeBtn;
+  const last = focusables[focusables.length - 1] || closeBtn;
+
+  const onKeyDown = (e) => {
+    if (e.key === "Escape") {
+      e.preventDefault();
+      closeItemDetails();
+      return;
+    }
+    if (e.key !== "Tab") return;
+
+    if (focusables.length === 0) {
+      e.preventDefault();
+      closeBtn.focus();
+      return;
+    }
+
+    if (e.shiftKey) {
+      if (document.activeElement === first) {
+        e.preventDefault();
+        last.focus();
+      }
+    } else {
+      if (document.activeElement === last) {
+        e.preventDefault();
+        first.focus();
+      }
+    }
+  };
+
+  modal._onKeyDown = onKeyDown;
+  modal._previouslyFocused = previouslyFocused;
+  modal.addEventListener("keydown", onKeyDown);
+
   closeBtn.focus();
 }
 
@@ -709,6 +886,17 @@ function closeItemDetails() {
   if (!modal) return;
   modal.hidden = true;
   modal.setAttribute("aria-hidden", "true");
+
+  if (modal._onKeyDown) {
+    modal.removeEventListener("keydown", modal._onKeyDown);
+    modal._onKeyDown = null;
+  }
+
+  const prev = modal._previouslyFocused;
+  modal._previouslyFocused = null;
+  if (prev && typeof prev.focus === "function") {
+    prev.focus();
+  }
 }
 
 async function refreshAll() {
@@ -817,7 +1005,10 @@ function handleLogout() {
   categories = [];
   items = [];
   archivedItems = [];
-  setMainViewMode("items");
+  localStorage.removeItem(STORAGE_KEYS.mainView);
+  localStorage.removeItem(STORAGE_KEYS.manageMode);
+  mainViewMode = "manage";
+  manageMode = "categories";
   localStorage.removeItem(STORAGE_KEYS.access);
   localStorage.removeItem(STORAGE_KEYS.refresh);
   updateAppVisibility();
@@ -833,8 +1024,9 @@ async function addCategory() {
     await apiPost("/categories/", { name });
     $("newCategoryName").value = "";
     await refreshAll();
+    toast("Category created.", { type: "success" });
   } catch (e) {
-    alert(String(e?.message || e));
+    toast(String(e?.message || e), { type: "danger" });
   }
 }
 
@@ -846,7 +1038,7 @@ async function addItem() {
   const notes = $("itemNotes").value.trim();
 
   if (!name) {
-    alert("Item name is required.");
+    toast("Item name is required.", { type: "danger" });
     return;
   }
 
@@ -872,8 +1064,9 @@ async function addItem() {
     $("itemSerial").value = "";
     $("itemNotes").value = "";
     await refreshAll();
+    toast("Item added.", { type: "success" });
   } catch (e) {
-    alert(String(e?.message || e));
+    toast(String(e?.message || e), { type: "danger" });
   }
 }
 
@@ -882,8 +1075,9 @@ async function archiveItem(it) {
   try {
     await apiDelete(`/items/${it.id}/`);
     await refreshAll();
+    toast("Item archived.", { type: "success" });
   } catch (e) {
-    alert(String(e?.message || e));
+    toast(String(e?.message || e), { type: "danger" });
   }
 }
 
@@ -891,8 +1085,9 @@ async function restoreItem(it) {
   try {
     await apiPost(`/items/${it.id}/restore/`, {});
     await refreshAll();
+    toast("Item restored.", { type: "success" });
   } catch (e) {
-    alert(String(e?.message || e));
+    toast(String(e?.message || e), { type: "danger" });
   }
 }
 
@@ -916,8 +1111,9 @@ async function editItem(it) {
   try {
     await apiPatch(`/items/${it.id}/`, body);
     await refreshAll();
+    toast("Item updated.", { type: "success" });
   } catch (e) {
-    alert(String(e?.message || e));
+    toast(String(e?.message || e), { type: "danger" });
   }
 }
 
@@ -966,6 +1162,22 @@ function init() {
     });
   }
 
+  const manageCategoriesBtn = $("manageCategoriesBtn");
+  if (manageCategoriesBtn) {
+    manageCategoriesBtn.addEventListener("click", () => {
+      if (!isStaff()) return;
+      setManageMode("categories");
+    });
+  }
+
+  const manageAddItemBtn = $("manageAddItemBtn");
+  if (manageAddItemBtn) {
+    manageAddItemBtn.addEventListener("click", () => {
+      if (!isStaff()) return;
+      setManageMode("addItem");
+    });
+  }
+
   // Viewer: click item row to view details
   const tbody = $("itemsTbody");
   if (tbody) {
@@ -976,6 +1188,21 @@ function init() {
       const tr = target && target.closest ? target.closest("tr") : null;
       const itemId = tr && tr.dataset ? tr.dataset.itemId : "";
       if (!itemId) return;
+
+      const list = itemViewMode === "archived" ? archivedItems : items;
+      const it = (list || []).find((x) => String(x.id) === String(itemId));
+      if (!it) return;
+      openItemDetails(it);
+    });
+
+    tbody.addEventListener("keydown", (e) => {
+      if (isStaff()) return;
+      if (e.key !== "Enter" && e.key !== " ") return;
+      const target = e.target;
+      const tr = target && target.closest ? target.closest("tr") : null;
+      const itemId = tr && tr.dataset ? tr.dataset.itemId : "";
+      if (!itemId) return;
+      e.preventDefault();
 
       const list = itemViewMode === "archived" ? archivedItems : items;
       const it = (list || []).find((x) => String(x.id) === String(itemId));
@@ -1022,11 +1249,27 @@ function init() {
   $("showActiveBtn").addEventListener("click", () => setItemViewMode("active"));
   $("showArchivedBtn").addEventListener("click", () => {
     if (!isStaff()) {
-      alert("Archived view is staff/admin only.");
+      toast("Archived view is staff/admin only.", { type: "danger" });
       return;
     }
     setItemViewMode("archived");
   });
+
+  const itemsSearch = $("itemsSearch");
+  if (itemsSearch) {
+    itemsSearch.addEventListener("input", (e) => {
+      itemsSearchQuery = e.target.value || "";
+      renderItemsTable();
+    });
+  }
+
+  const itemsCategoryFilter = $("itemsCategoryFilter");
+  if (itemsCategoryFilter) {
+    itemsCategoryFilter.addEventListener("change", (e) => {
+      itemsCategoryQuery = e.target.value || "__all__";
+      renderItemsTable();
+    });
+  }
 
   updateAppVisibility();
 
