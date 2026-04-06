@@ -604,9 +604,27 @@ code {
   grid-column: 1;
   justify-self: center;
   max-width: calc(100% - 170px);
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
+}
+
+.header-title {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.header-title-text {
+  text-align: center;
+}
+
+.header-logo {
+  width: 34px;
+  height: 34px;
+  border-radius: 999px;
+  object-fit: cover;
+  background: rgba(255, 255, 255, 0.92);
+  border: 1px solid rgba(255, 255, 255, 0.22);
 }
 
 .session-bar {
@@ -633,7 +651,6 @@ code {
 
   .header h1 {
     max-width: 100%;
-    white-space: normal;
   }
 
   .session-bar {
