@@ -3,6 +3,7 @@
 const STORAGE_KEYS = {
   access: "inventory.accessToken",
   refresh: "inventory.refreshToken",
+  mainView: "inventory.mainView", // items | manage
 };
 
 function $(id) {
@@ -40,6 +41,8 @@ let items = [];
 let archivedItems = [];
 let itemViewMode = "active"; // active | archived
 
+let mainViewMode = localStorage.getItem(STORAGE_KEYS.mainView) || "items"; // items | manage
+
 let accounts = [];
 let accountsFilter = "active"; // active | taken_down | all
 
@@ -53,6 +56,16 @@ function isAdmin() {
 
 function canDecrypt() {
   return !!(me && me.can_decrypt_item_details);
+}
+
+function normalizeMainViewMode(value) {
+  return value === "manage" ? "manage" : "items";
+}
+
+function setMainViewMode(mode) {
+  mainViewMode = normalizeMainViewMode(mode);
+  localStorage.setItem(STORAGE_KEYS.mainView, mainViewMode);
+  updateAppVisibility();
 }
 
 function setPage(page) {
@@ -221,8 +234,33 @@ function updateAppVisibility() {
   const authed = !!accessToken;
   setHidden($("auth"), authed);
   setHidden($("app"), !authed);
-  setHidden($("staffArea"), !authed || !isStaff());
-  setHidden($("addItemSection"), !authed || !isStaff());
+
+  const staff = authed && isStaff();
+
+  const managePanel = $("managePanel");
+  const itemsPanel = $("itemsPanel");
+  const categoriesViewBtn = $("categoriesViewBtn");
+  const itemsViewBtn = $("itemsViewBtn");
+
+  if (categoriesViewBtn) setHidden(categoriesViewBtn, !staff);
+  if (itemsViewBtn) setHidden(itemsViewBtn, !staff);
+
+  const effectiveMainView = staff ? normalizeMainViewMode(mainViewMode) : "items";
+
+  if (managePanel || itemsPanel) {
+    if (managePanel) setHidden(managePanel, !staff || effectiveMainView !== "manage");
+    if (itemsPanel) setHidden(itemsPanel, !authed || (staff && effectiveMainView !== "items"));
+
+    if (categoriesViewBtn && itemsViewBtn) {
+      const manageActive = effectiveMainView === "manage";
+      categoriesViewBtn.classList.toggle("btn-primary", manageActive);
+      itemsViewBtn.classList.toggle("btn-primary", !manageActive);
+    }
+  } else {
+    setHidden($("staffArea"), !staff);
+    setHidden($("addItemSection"), !staff);
+  }
+
   setHidden($("accountsBtn"), !authed || !isAdmin());
   if (!authed || !isAdmin()) setPage("inventory");
 
@@ -779,6 +817,7 @@ function handleLogout() {
   categories = [];
   items = [];
   archivedItems = [];
+  setMainViewMode("items");
   localStorage.removeItem(STORAGE_KEYS.access);
   localStorage.removeItem(STORAGE_KEYS.refresh);
   updateAppVisibility();
@@ -910,6 +949,22 @@ function init() {
   // App
   $("logoutBtn").addEventListener("click", handleLogout);
   $("refreshBtn").addEventListener("click", refreshAll);
+
+  const categoriesViewBtn = $("categoriesViewBtn");
+  if (categoriesViewBtn) {
+    categoriesViewBtn.addEventListener("click", () => {
+      if (!isStaff()) return;
+      setMainViewMode("manage");
+    });
+  }
+
+  const itemsViewBtn = $("itemsViewBtn");
+  if (itemsViewBtn) {
+    itemsViewBtn.addEventListener("click", () => {
+      if (!isStaff()) return;
+      setMainViewMode("items");
+    });
+  }
 
   // Viewer: click item row to view details
   const tbody = $("itemsTbody");

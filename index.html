@@ -100,6 +100,8 @@
               <p id="meInfo" class="muted"></p>
             </div>
             <div class="row right">
+              <button id="categoriesViewBtn" class="btn btn-small" hidden>Categories</button>
+              <button id="itemsViewBtn" class="btn btn-small btn-primary" hidden>Item list</button>
               <button id="accountsBtn" class="btn" hidden>Accounts</button>
               <button id="refreshBtn" class="btn">Refresh</button>
               <button id="logoutBtn" class="btn">Sign out</button>
@@ -108,53 +110,55 @@
 
           <div id="roleBanner" class="role-banner" hidden></div>
 
-          <div id="staffArea" class="card-inner" hidden>
-          <h3>Categories (staff/admin)</h3>
-          <div class="row">
-            <label class="field grow">
-              <span>New category name</span>
-              <input id="newCategoryName" placeholder="e.g. Laptops" />
-            </label>
-            <button id="addCategoryBtn" class="btn">Add category</button>
-          </div>
-          <div class="row">
-            <label class="field">
-              <span>Selected category</span>
-              <select id="categorySelect"></select>
-            </label>
-          </div>
+          <div id="managePanel" hidden>
+            <div id="staffArea" class="card-inner">
+            <h3>Categories (staff/admin)</h3>
+            <div class="row">
+              <label class="field grow">
+                <span>New category name</span>
+                <input id="newCategoryName" placeholder="e.g. Laptops" />
+              </label>
+              <button id="addCategoryBtn" class="btn">Add category</button>
+            </div>
+            <div class="row">
+              <label class="field">
+                <span>Selected category</span>
+                <select id="categorySelect"></select>
+              </label>
+            </div>
+            </div>
+
+            <div id="addItemSection" class="card-inner">
+            <h3>Add item (staff/admin)</h3>
+            <div class="grid">
+              <label class="field">
+                <span>Name</span>
+                <input id="itemName" placeholder="e.g. Oscilloscope" />
+              </label>
+              <label class="field">
+                <span>Quantity</span>
+                <input id="itemQuantity" type="number" min="1" value="1" />
+              </label>
+              <label class="field">
+                <span>Location</span>
+                <input id="itemLocation" placeholder="e.g. Lab A" />
+              </label>
+              <label class="field">
+                <span>Serial number</span>
+                <input id="itemSerial" />
+              </label>
+              <label class="field full">
+                <span>Notes</span>
+                <textarea id="itemNotes" rows="2"></textarea>
+              </label>
+            </div>
+            <div class="row">
+              <button id="addItemBtn" class="btn btn-primary">Add item</button>
+            </div>
+            </div>
           </div>
 
-          <div id="addItemSection" class="card-inner" hidden>
-          <h3>Add item (staff/admin)</h3>
-          <div class="grid">
-            <label class="field">
-              <span>Name</span>
-              <input id="itemName" placeholder="e.g. Oscilloscope" />
-            </label>
-            <label class="field">
-              <span>Quantity</span>
-              <input id="itemQuantity" type="number" min="1" value="1" />
-            </label>
-            <label class="field">
-              <span>Location</span>
-              <input id="itemLocation" placeholder="e.g. Lab A" />
-            </label>
-            <label class="field">
-              <span>Serial number</span>
-              <input id="itemSerial" />
-            </label>
-            <label class="field full">
-              <span>Notes</span>
-              <textarea id="itemNotes" rows="2"></textarea>
-            </label>
-          </div>
-          <div class="row">
-            <button id="addItemBtn" class="btn btn-primary">Add item</button>
-          </div>
-          </div>
-
-          <div class="card-inner">
+          <div id="itemsPanel" class="card-inner">
           <div class="split">
             <h3>Items</h3>
             <div class="row right">
@@ -236,7 +240,7 @@
       <footer class="footer muted small"></footer>
     </div>
 
-    <script src="./config.js?v=20260404-2"></script>
-    <script src="./app.js?v=20260404-2"></script>
+    <script src="./config.js?v=20260407-1"></script>
+    <script src="./app.js?v=20260407-1"></script>
   </body>
 </html>
