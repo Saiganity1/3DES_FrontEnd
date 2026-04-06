@@ -1363,6 +1363,24 @@ function init() {
   $("tabLogin").addEventListener("click", () => setAuthMode("login"));
   $("tabRegister").addEventListener("click", () => setAuthMode("register"));
 
+  // Auth links (Mangoools-style layout)
+  const goRegisterLink = $("goRegisterLink");
+  if (goRegisterLink) {
+    goRegisterLink.addEventListener("click", () => setAuthMode("register"));
+  }
+
+  const goLoginLink = $("goLoginLink");
+  if (goLoginLink) {
+    goLoginLink.addEventListener("click", () => setAuthMode("login"));
+  }
+
+  const forgotPasswordLink = $("forgotPasswordLink");
+  if (forgotPasswordLink) {
+    forgotPasswordLink.addEventListener("click", () => {
+      toast("Password reset isn't available here yet — please contact your admin.", { type: "info" });
+    });
+  }
+
   // Auth
   $("loginBtn").addEventListener("click", handleLogin);
   $("registerBtn").addEventListener("click", handleRegister);

@@ -340,6 +340,182 @@ body {
   justify-content: center;
 }
 
+/* Mangoools-style centered auth */
+.auth-mango {
+  max-width: 720px;
+  margin: 26px auto 0;
+  padding: 18px;
+}
+
+/* Remove outer card feel; the inner box is the card */
+.auth-mango.card {
+  background: transparent;
+  border: 0;
+  box-shadow: none;
+  backdrop-filter: none;
+}
+
+.auth-mango::before,
+.auth-mango::after {
+  content: "";
+  position: absolute;
+  width: 220px;
+  height: 220px;
+  border-radius: 999px;
+  filter: blur(2px);
+  opacity: 0.75;
+  pointer-events: none;
+}
+
+.auth-mango::before {
+  left: -40px;
+  top: 90px;
+  background: radial-gradient(
+    circle at 40% 40%,
+    color-mix(in srgb, var(--highlight) 52%, transparent),
+    transparent 62%
+  );
+}
+
+.auth-mango::after {
+  right: -60px;
+  top: 140px;
+  background: radial-gradient(
+    circle at 40% 40%,
+    color-mix(in srgb, var(--brand-red) 44%, transparent),
+    transparent 64%
+  );
+}
+
+.auth-top {
+  display: grid;
+  gap: 10px;
+  justify-items: center;
+  text-align: center;
+  margin-bottom: 16px;
+}
+
+.auth-logo {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.auth-logo-text {
+  font-weight: 900;
+  letter-spacing: -0.01em;
+  color: var(--label);
+}
+
+.auth-headline {
+  margin: 0;
+  font-size: 2.0rem;
+  letter-spacing: -0.03em;
+}
+
+.auth-tagline {
+  margin: 0;
+}
+
+.auth-box {
+  max-width: 520px;
+  margin: 0 auto;
+  background: rgba(255, 255, 255, 0.92);
+  border: 1px solid var(--border-soft);
+  border-radius: 16px;
+  padding: 18px;
+  box-shadow: var(--shadow-sm);
+  backdrop-filter: blur(10px);
+}
+
+.grid-1 {
+  grid-template-columns: 1fr;
+}
+
+.input-with-icon {
+  position: relative;
+}
+
+.input-with-icon input {
+  padding-left: 44px;
+}
+
+.input-icon {
+  position: absolute;
+  left: 10px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 18px;
+  height: 18px;
+  background: var(--muted);
+  opacity: 0.75;
+}
+
+.input-icon-user {
+  -webkit-mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath fill='black' d='M12 12a4 4 0 1 0-4-4a4 4 0 0 0 4 4Zm0 2c-4.42 0-8 2-8 4.5V21h16v-2.5C20 16 16.42 14 12 14Z'/%3E%3C/svg%3E");
+  mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath fill='black' d='M12 12a4 4 0 1 0-4-4a4 4 0 0 0 4 4Zm0 2c-4.42 0-8 2-8 4.5V21h16v-2.5C20 16 16.42 14 12 14Z'/%3E%3C/svg%3E");
+  -webkit-mask-repeat: no-repeat;
+  mask-repeat: no-repeat;
+  -webkit-mask-size: contain;
+  mask-size: contain;
+  -webkit-mask-position: center;
+  mask-position: center;
+}
+
+.input-icon-lock {
+  -webkit-mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath fill='black' d='M17 9V7a5 5 0 0 0-10 0v2H6a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-9a2 2 0 0 0-2-2Zm-8 0V7a3 3 0 0 1 6 0v2Z'/%3E%3C/svg%3E");
+  mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath fill='black' d='M17 9V7a5 5 0 0 0-10 0v2H6a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-9a2 2 0 0 0-2-2Zm-8 0V7a3 3 0 0 1 6 0v2Z'/%3E%3C/svg%3E");
+  -webkit-mask-repeat: no-repeat;
+  mask-repeat: no-repeat;
+  -webkit-mask-size: contain;
+  mask-size: contain;
+  -webkit-mask-position: center;
+  mask-position: center;
+}
+
+.btn-cta {
+  width: 100%;
+  justify-content: center;
+  border-radius: 999px;
+  padding: 12px 14px;
+  background: linear-gradient(
+    180deg,
+    color-mix(in srgb, var(--primary) 58%, var(--highlight)),
+    color-mix(in srgb, var(--primary) 78%, var(--brand))
+  );
+  border-color: rgba(255, 255, 255, 0.16);
+  color: #fff;
+  font-weight: 900;
+}
+
+.btn-cta:hover {
+  background: linear-gradient(
+    180deg,
+    color-mix(in srgb, var(--primary-hover) 58%, var(--highlight)),
+    color-mix(in srgb, var(--primary-hover) 78%, var(--brand))
+  );
+}
+
+.auth-links {
+  margin-top: 10px;
+  justify-content: space-between;
+}
+
+.link {
+  border: 0;
+  background: transparent;
+  padding: 0;
+  cursor: pointer;
+  color: var(--primary);
+  font-weight: 800;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+.link:hover {
+  color: var(--primary-hover);
+}
+
 code {
   background: var(--border-soft);
   padding: 0.1rem 0.3rem;
