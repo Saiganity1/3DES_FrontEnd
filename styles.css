@@ -38,15 +38,15 @@
 
 [hidden] {
   display: none !important;
-}
+  max-width: 100%;
 
 body {
   margin: 0;
-  font-family: Inter, system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
-  background:
-    radial-gradient(
-      1200px 800px at 8% -10%,
-      color-mix(in srgb, var(--brand) 18%, transparent),
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  align-items: center;
+  column-gap: 14px;
+  width: 100%;
       transparent 62%
     ),
     radial-gradient(
@@ -57,11 +57,19 @@ body {
     radial-gradient(
       900px 680px at 85% 95%,
       color-mix(in srgb, var(--brand-red) 14%, transparent),
-      transparent 58%
+  object-fit: contain;
+  padding: 3px;
     ),
     linear-gradient(180deg, var(--surface-2) 0%, var(--bg) 38%, var(--bg) 100%);
   color: var(--text);
   line-height: 1.45;
+.header-logo-left {
+  justify-self: start;
+}
+
+.header-logo-right {
+  justify-self: end;
+}
   -webkit-font-smoothing: antialiased;
   text-rendering: optimizeLegibility;
 }
