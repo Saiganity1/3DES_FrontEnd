@@ -39,7 +39,23 @@
 body {
   margin: 0;
   font-family: Inter, system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
-  background: linear-gradient(180deg, var(--surface-2) 0%, var(--bg) 38%, var(--bg) 100%);
+  background:
+    radial-gradient(
+      1200px 800px at 8% -10%,
+      color-mix(in srgb, var(--brand) 18%, transparent),
+      transparent 62%
+    ),
+    radial-gradient(
+      1000px 760px at 92% 0%,
+      color-mix(in srgb, var(--highlight) 18%, transparent),
+      transparent 60%
+    ),
+    radial-gradient(
+      900px 680px at 85% 95%,
+      color-mix(in srgb, var(--brand-red) 14%, transparent),
+      transparent 58%
+    ),
+    linear-gradient(180deg, var(--surface-2) 0%, var(--bg) 38%, var(--bg) 100%);
   color: var(--text);
   line-height: 1.45;
   -webkit-font-smoothing: antialiased;
@@ -230,19 +246,20 @@ code {
 }
 
 .card {
-  background: var(--surface);
-  border: 1px solid var(--border);
+  background: rgba(255, 255, 255, 0.92);
+  border: 1px solid var(--border-soft);
   border-radius: var(--radius);
   padding: 20px;
   margin: 12px 0;
   box-shadow: var(--shadow-sm);
   transition: transform var(--t) var(--ease-out), box-shadow var(--t) var(--ease-out),
     border-color var(--t) var(--ease-out);
+  backdrop-filter: blur(10px);
 }
 
 .card:hover {
   transform: translateY(-1px);
-  border-color: var(--border);
+  border-color: color-mix(in srgb, var(--brand) 18%, var(--border));
   box-shadow: 0 10px 26px rgba(0, 0, 0, 0.10);
 }
 
