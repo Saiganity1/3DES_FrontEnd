@@ -271,10 +271,17 @@ async function fetchActivity() {
       const who = ev?.actor ? `@${ev.actor}` : "";
       const msg = ev?.message ? String(ev.message) : String(ev?.action || "").replace(/_/g, " ");
       const target = ev?.item_name ? ` — ${ev.item_name}` : "";
-      row.innerHTML = `
-        <div class="activity-main">${escapeText(msg)}${escapeText(target)}</div>
-        <div class="activity-meta muted small">${escapeText(who)} ${escapeText(when)}</div>
-      `;
+
+      const main = document.createElement("div");
+      main.className = "activity-main";
+      main.textContent = `${msg}${target}`;
+
+      const meta = document.createElement("div");
+      meta.className = "activity-meta muted small";
+      meta.textContent = `${who} ${when}`.trim();
+
+      row.appendChild(main);
+      row.appendChild(meta);
       list.appendChild(row);
     }
   } catch (e) {
