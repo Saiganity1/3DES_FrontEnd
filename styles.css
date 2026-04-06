@@ -1,17 +1,22 @@
 :root {
   color-scheme: light;
-  --bg: #f6f7f9;
+  /* UA-inspired palette (approx.): navy / red / gold */
+  --brand: #002366;
+  --brand-red: #ce2029;
+  --highlight: #ffbd00;
+  --primary: #0288d1;
+  --primary-hover: #0277b8;
+  --primary-soft: #e6f4ff;
+
+  --bg: #f5f6f8;
   --surface: #fff;
-  --surface-2: #fafbfc;
-  --text: #111;
-  --muted: #5b6472;
-  --label: #364152;
-  --border: #e4e7ec;
+  --surface-2: #f5f5f5;
+  --text: #070707;
+  --muted: #6e7a84;
+  --label: #1f2937;
+  --border: #e5e7eb;
   --border-soft: #eef0f3;
-  --input-border: #d0d5dd;
-  --primary: #2563eb;
-  --primary-hover: #1d4ed8;
-  --primary-soft: #e8f0ff;
+  --input-border: #d1d5db;
   --danger-bg: #fff1f2;
   --danger-border: #fecdd3;
   --danger-text: #9f1239;
@@ -25,7 +30,7 @@
 
 body {
   margin: 0;
-  font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+  font-family: Inter, system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
   background: linear-gradient(180deg, var(--surface-2) 0%, var(--bg) 38%, var(--bg) 100%);
   color: var(--text);
   line-height: 1.45;
@@ -71,7 +76,8 @@ body {
   font-weight: 900;
   letter-spacing: 0.02em;
   color: var(--surface);
-  background: var(--primary);
+  background: var(--brand);
+  border: 1px solid rgba(255, 189, 0, 0.35);
 }
 
 .brand-mark-sm {
@@ -190,21 +196,26 @@ code {
   gap: 16px;
   margin-bottom: 18px;
   padding: 14px 16px;
-  border: 1px solid var(--border);
+  border: 1px solid rgba(255, 255, 255, 0.14);
   border-radius: var(--radius);
-  background: linear-gradient(180deg, var(--surface) 0%, var(--surface-2) 140%);
+  background: linear-gradient(90deg, var(--brand) 0%, #030981 60%, var(--brand) 100%);
+  color: #fff;
+}
+
+.header h1 {
+  color: #fff;
 }
 
 .session-bar {
   font-size: 0.9rem;
-  color: var(--muted);
+  color: rgba(255, 255, 255, 0.88);
 }
 
 .session-bar {
   padding: 6px 10px;
-  border: 1px solid var(--border-soft);
+  border: 1px solid rgba(255, 255, 255, 0.18);
   border-radius: 999px;
-  background: var(--surface-2);
+  background: rgba(255, 255, 255, 0.10);
 }
 
 .card {
@@ -228,7 +239,7 @@ code {
   padding: 10px 12px;
   margin: 12px 0 4px;
   border: 1px solid var(--border-soft);
-  border-left: 4px solid var(--primary);
+  border-left: 4px solid var(--brand);
   border-radius: 10px;
   background: var(--surface-2);
   color: var(--muted);
@@ -243,11 +254,11 @@ code {
 }
 
 .role-admin .role-banner {
-  border-left-color: var(--primary);
+  border-left-color: var(--brand);
 }
 
 .role-admin .role-banner {
-  background: var(--primary-soft);
+  background: rgba(2, 136, 209, 0.10);
 }
 
 .role-viewer #meInfo {
@@ -393,7 +404,9 @@ h3 {
 }
 
 .btn-primary:hover {
-  background: var(--primary-hover);
+  border-color: var(--highlight);
+  background: var(--highlight);
+  color: var(--text);
 }
 
 .btn-danger {
