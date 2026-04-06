@@ -612,13 +612,16 @@ async function loadMe() {
 }
 
 function renderCategorySelect() {
-  const sel = $("categorySelect");
-  sel.innerHTML = "";
-  for (const c of categories) {
-    const opt = document.createElement("option");
-    opt.value = String(c.id);
-    opt.textContent = c.name;
-    sel.appendChild(opt);
+  const sels = [$("categorySelect"), $("itemCategorySelect")].filter(Boolean);
+  for (const sel of sels) {
+    sel.innerHTML = "";
+    for (const c of categories) {
+      const opt = document.createElement("option");
+      opt.value = String(c.id);
+      opt.textContent = c.name;
+      sel.appendChild(opt);
+    }
+    sel.disabled = categories.length === 0;
   }
 }
 
@@ -1113,7 +1116,10 @@ async function refreshAll() {
       renderCategorySelect();
     } else {
       categories = [];
-      $("categorySelect").innerHTML = "";
+      const sel = $("categorySelect");
+      if (sel) sel.innerHTML = "";
+      const sel2 = $("itemCategorySelect");
+      if (sel2) sel2.innerHTML = "";
     }
 
     if (itemViewMode === "archived") {
@@ -1263,8 +1269,8 @@ async function addItem() {
   };
 
   if (isStaff()) {
-    const sel = $("categorySelect");
-    const category = sel.value ? Number(sel.value) : null;
+    const sel = $("itemCategorySelect") || $("categorySelect");
+    const category = sel && sel.value ? Number(sel.value) : null;
     if (category) body.category = category;
   }
 
