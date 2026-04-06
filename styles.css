@@ -545,6 +545,8 @@ code {
     min-height: 100vh;
     display: grid;
     grid-template-rows: auto 1fr;
+    padding-top: 18px;
+    padding-bottom: 18px;
   }
 
   body:not(.is-authed) .header {
@@ -552,9 +554,9 @@ code {
   }
 
   body:not(.is-authed) #auth {
-    align-self: center;
-    margin-top: 0;
-    margin-bottom: 0;
+    place-self: center;
+    width: min(720px, 100%);
+    margin: 0;
   }
 
   body:not(.is-authed) .auth-mango {
