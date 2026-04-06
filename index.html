@@ -10,7 +10,7 @@
       href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap"
       rel="stylesheet"
     />
-    <link rel="stylesheet" href="./styles.css?v=20260407-ua-3" />
+    <link rel="stylesheet" href="./styles.css?v=20260407-ua-4" />
   </head>
   <body>
     <div class="container">
@@ -110,6 +110,36 @@
 
           <div id="roleBanner" class="role-banner" hidden></div>
 
+          <div id="dashboard" class="dashboard" hidden>
+            <div class="dashboard-grid">
+              <div class="dash-card">
+                <div class="dash-label">Total items</div>
+                <div id="statTotalItems" class="dash-value">0</div>
+              </div>
+              <div class="dash-card">
+                <div class="dash-label">Categories</div>
+                <div id="statCategories" class="dash-value">0</div>
+              </div>
+              <div class="dash-card">
+                <div class="dash-label">Low stock</div>
+                <div id="statLowStock" class="dash-value">0</div>
+              </div>
+              <div class="dash-card">
+                <div class="dash-label">Archived</div>
+                <div id="statArchived" class="dash-value">0</div>
+              </div>
+            </div>
+
+            <div id="activityCard" class="card-inner" hidden>
+              <div class="split">
+                <h3>Recent activity</h3>
+                <button id="activityRefreshBtn" class="btn btn-small" type="button">Refresh</button>
+              </div>
+              <div id="activityError" class="error" hidden></div>
+              <div id="activityList" class="activity-list"></div>
+            </div>
+          </div>
+
           <div id="managePanel" hidden>
             <div class="row right manage-tabs">
               <button id="manageCategoriesBtn" class="btn btn-small btn-primary" type="button">Categories</button>
@@ -144,12 +174,20 @@
                 <input id="itemQuantity" type="number" min="1" value="1" />
               </label>
               <label class="field">
+                <span>Min qty (low stock)</span>
+                <input id="itemMinQuantity" type="number" min="0" value="0" />
+              </label>
+              <label class="field">
                 <span>Location</span>
                 <input id="itemLocation" placeholder="e.g. Lab A" />
               </label>
               <label class="field">
                 <span>Serial number</span>
                 <input id="itemSerial" />
+              </label>
+              <label class="field">
+                <span>Photo URL (optional)</span>
+                <input id="itemPhotoUrl" placeholder="https://..." />
               </label>
               <label class="field full">
                 <span>Notes</span>
@@ -166,6 +204,7 @@
           <div class="split">
             <h3>Items</h3>
             <div class="row right">
+              <button id="exportCsvBtn" class="btn btn-small" type="button">Export CSV</button>
               <button id="showActiveBtn" class="btn btn-small btn-primary">Active</button>
               <button id="showArchivedBtn" class="btn btn-small">Archived (staff)</button>
             </div>
@@ -181,6 +220,20 @@
             </label>
           </div>
           <div id="itemsError" class="error" hidden></div>
+
+          <div class="row right pager">
+            <button id="prevPageBtn" class="btn btn-small" type="button">Prev</button>
+            <div id="pageInfo" class="muted small"></div>
+            <button id="nextPageBtn" class="btn btn-small" type="button">Next</button>
+            <label class="field page-size">
+              <span>Rows</span>
+              <select id="pageSizeSelect">
+                <option value="10">10</option>
+                <option value="25" selected>25</option>
+                <option value="50">50</option>
+              </select>
+            </label>
+          </div>
           <div class="table-wrap">
             <table class="table">
               <thead>
@@ -217,6 +270,7 @@
             <div>
               <h2>Accounts</h2>
               <p class="muted">Manage registered accounts (admin only).</p>
+              <p class="muted small">Roles: Viewer (read-only), Staff (manage items), Admin (manage items + accounts). Decrypt permission allows on-demand decryption for approved non-staff accounts.</p>
             </div>
             <div class="row right">
               <label class="field accounts-filter">
@@ -256,7 +310,7 @@
 
     <div id="toastStack" class="toast-stack" aria-live="polite" aria-relevant="additions"></div>
 
-    <script src="./config.js?v=20260407-3"></script>
-    <script src="./app.js?v=20260407-3"></script>
+    <script src="./config.js?v=20260407-4"></script>
+    <script src="./app.js?v=20260407-4"></script>
   </body>
 </html>

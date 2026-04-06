@@ -252,6 +252,77 @@ code {
   margin-top: 14px;
 }
 
+.dashboard {
+  margin-top: 12px;
+}
+
+.dashboard-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 12px;
+}
+
+@media (max-width: 900px) {
+  .dashboard-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+.dash-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  padding: 14px;
+  box-shadow: var(--shadow-sm);
+}
+
+.dash-label {
+  color: var(--muted);
+  font-size: 0.9rem;
+}
+
+.dash-value {
+  font-size: 1.6rem;
+  font-weight: 900;
+  letter-spacing: -0.02em;
+  margin-top: 4px;
+}
+
+.activity-list {
+  display: grid;
+  gap: 10px;
+  margin-top: 10px;
+}
+
+.activity-item {
+  border: 1px solid var(--border-soft);
+  border-radius: var(--radius-sm);
+  padding: 10px 12px;
+  background: var(--surface-2);
+}
+
+.activity-main {
+  font-weight: 700;
+}
+
+.activity-meta {
+  margin-top: 3px;
+}
+
+.pager {
+  align-items: end;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.page-size select {
+  min-width: 90px;
+}
+
+tr.row-low td {
+  background: var(--danger-bg);
+}
+
 .role-banner {
   display: flex;
   align-items: center;

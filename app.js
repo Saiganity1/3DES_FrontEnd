@@ -82,8 +82,45 @@ let manageMode = localStorage.getItem(STORAGE_KEYS.manageMode) || "categories"; 
 let itemsSearchQuery = "";
 let itemsCategoryQuery = "__all__";
 
+let itemsPage = 1;
+let itemsPageSize = 25;
+
 let accounts = [];
 let accountsFilter = "active"; // active | taken_down | all
+
+function clamp(n, min, max) {
+  return Math.max(min, Math.min(max, n));
+}
+
+function safeNumber(v, fallback = 0) {
+  const n = Number(v);
+  return Number.isFinite(n) ? n : fallback;
+}
+
+function isLowStock(it) {
+  const qty = safeNumber(it?.quantity, 0);
+  const minQty = safeNumber(it?.min_quantity, 0);
+  return minQty > 0 && qty <= minQty;
+}
+
+function escapeCsvCell(value) {
+  if (value === null || value === undefined) return "";
+  const s = String(value);
+  if (/[",\n\r]/.test(s)) return `"${s.replace(/"/g, '""')}"`;
+  return s;
+}
+
+function downloadTextFile(filename, content, mimeType = "text/plain;charset=utf-8") {
+  const blob = new Blob([content], { type: mimeType });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = filename;
+  document.body.appendChild(a);
+  a.click();
+  a.remove();
+  URL.revokeObjectURL(url);
+}
 
 function isStaff() {
   return !!(me && (me.is_staff || me.is_superuser));
@@ -144,6 +181,159 @@ function getFilteredItems(list) {
       .join("\n");
     return hay.includes(q);
   });
+}
+
+function getPagedItems(list) {
+  const total = (list || []).length;
+  const pageCount = Math.max(1, Math.ceil(total / Math.max(1, itemsPageSize)));
+  itemsPage = clamp(itemsPage, 1, pageCount);
+  const start = (itemsPage - 1) * itemsPageSize;
+  const end = start + itemsPageSize;
+  return {
+    total,
+    pageCount,
+    pageItems: (list || []).slice(start, end),
+  };
+}
+
+function updatePagerUi(total, pageCount) {
+  const info = $("pageInfo");
+  const prev = $("prevPageBtn");
+  const next = $("nextPageBtn");
+
+  if (info) info.textContent = `${itemsPage} / ${pageCount} · ${total} rows`;
+  if (prev) prev.disabled = itemsPage <= 1;
+  if (next) next.disabled = itemsPage >= pageCount;
+}
+
+function getDistinctCategoryCountFromItems(list) {
+  const s = new Set();
+  for (const it of list || []) {
+    const name = String(it?.category_name || "").trim();
+    if (name) s.add(name);
+  }
+  return s.size;
+}
+
+function renderDashboard() {
+  const dash = $("dashboard");
+  if (!dash) return;
+
+  const activeList = items || [];
+  const archivedList = archivedItems || [];
+
+  const activeCount = activeList.length;
+  const archivedCount = archivedList.length;
+  const lowCount = activeList.filter(isLowStock).length;
+  const categoriesCount = (categories && categories.length) ? categories.length : getDistinctCategoryCountFromItems(activeList);
+
+  const totalEl = $("statTotalItems");
+  const catEl = $("statCategories");
+  const lowEl = $("statLowStock");
+  const archEl = $("statArchived");
+  if (totalEl) totalEl.textContent = String(activeCount);
+  if (catEl) catEl.textContent = String(categoriesCount);
+  if (lowEl) lowEl.textContent = String(lowCount);
+  if (archEl) archEl.textContent = String(archivedCount);
+
+  setHidden(dash, false);
+}
+
+async function fetchActivity() {
+  const card = $("activityCard");
+  const list = $("activityList");
+  const err = $("activityError");
+  if (!card || !list) return;
+
+  if (!isAdmin()) {
+    setHidden(card, true);
+    return;
+  }
+
+  setHidden(card, false);
+  showError(err, "");
+  list.innerHTML = '<div class="muted small">Loading…</div>';
+
+  try {
+    const res = await apiGet("/activity/");
+    const feed = Array.isArray(res) ? res : (res && res.results) ? res.results : [];
+
+    list.innerHTML = "";
+    if (!feed.length) {
+      list.innerHTML = '<div class="muted small">No activity yet.</div>';
+      return;
+    }
+
+    for (const ev of feed.slice(0, 12)) {
+      const row = document.createElement("div");
+      row.className = "activity-item";
+      const when = ev?.created_at ? formatDateTime(ev.created_at) : "";
+      const who = ev?.actor ? `@${ev.actor}` : "";
+      const msg = ev?.message ? String(ev.message) : String(ev?.action || "").replace(/_/g, " ");
+      const target = ev?.item_name ? ` — ${ev.item_name}` : "";
+      row.innerHTML = `
+        <div class="activity-main">${escapeText(msg)}${escapeText(target)}</div>
+        <div class="activity-meta muted small">${escapeText(who)} ${escapeText(when)}</div>
+      `;
+      list.appendChild(row);
+    }
+  } catch (e) {
+    list.innerHTML = "";
+    showError(err, e?.message || String(e));
+  }
+}
+
+function exportCsvFromCurrentView() {
+  const list = itemViewMode === "archived" ? (archivedItems || []) : (items || []);
+  const filtered = getFilteredItems(list);
+
+  const rows = [
+    [
+      "id",
+      "name",
+      "quantity",
+      "min_quantity",
+      "is_low_stock",
+      "category",
+      "location",
+      "serial_number",
+      "notes",
+      "created_by",
+      "created_at",
+      "updated_by",
+      "updated_at",
+      "is_archived",
+      "photo_url",
+    ].join(","),
+  ];
+
+  for (const it of filtered) {
+    rows.push(
+      [
+        it.id,
+        it.name,
+        it.quantity,
+        it.min_quantity ?? "",
+        isLowStock(it) ? "true" : "false",
+        it.category_name || "",
+        it.location || "",
+        it.serial_number || "",
+        it.notes || "",
+        it.created_by || "",
+        it.created_at || "",
+        it.updated_by || "",
+        it.updated_at || "",
+        it.is_archived ? "true" : "false",
+        it.photo_url || "",
+      ]
+        .map(escapeCsvCell)
+        .join(",")
+    );
+  }
+
+  const stamp = new Date().toISOString().slice(0, 10);
+  downloadTextFile(`inventory_export_${stamp}.csv`, rows.join("\n"), "text/csv;charset=utf-8");
+  toast("CSV exported.", { type: "success" });
 }
 
 function renderItemFilters(list) {
@@ -662,6 +852,9 @@ function renderItemsTable() {
   const filtered = getFilteredItems(list);
   renderItemFilters(list);
 
+  const { total, pageCount, pageItems } = getPagedItems(filtered);
+  updatePagerUi(total, pageCount);
+
   if (!list || list.length === 0) {
     const tr = document.createElement("tr");
     tr.className = "empty-row";
@@ -688,9 +881,13 @@ function renderItemsTable() {
     return;
   }
 
-  for (const it of filtered) {
+  for (const it of pageItems) {
     const tr = document.createElement("tr");
     tr.dataset.itemId = String(it.id);
+
+    if (isLowStock(it) && itemViewMode === "active") {
+      tr.classList.add("row-low");
+    }
 
     if (!isStaff()) {
       tr.tabIndex = 0;
@@ -818,6 +1015,7 @@ function openItemDetails(it) {
   const rows = [
     ["Name", it?.name || ""],
     ["Quantity", it?.quantity ?? ""],
+    ["Min qty (low stock)", it?.min_quantity ?? ""],
     ["Category", it?.category_name || ""],
     ["Posted by", it?.created_by || ""],
     ["Posted at", formatDateTime(it?.created_at)],
@@ -826,6 +1024,7 @@ function openItemDetails(it) {
     ["Location", it?.location || ""],
     ["Serial", it?.serial_number || ""],
     ["Notes", it?.notes || ""],
+    ["Photo URL", it?.photo_url || ""],
   ];
 
   for (const [label, value] of rows) {
@@ -915,10 +1114,12 @@ async function refreshAll() {
       items = [];
     } else {
       items = await apiGet("/items/");
-      archivedItems = [];
+      archivedItems = isStaff() ? await apiGet("/items/archived/") : [];
     }
 
     renderItemsTable();
+    renderDashboard();
+    fetchActivity();
   } catch (e) {
     const msg = String(e?.message || e);
     if (/Failed to fetch|NetworkError|ECONNREFUSED|ENOTFOUND/i.test(msg)) {
@@ -1033,9 +1234,11 @@ async function addCategory() {
 async function addItem() {
   const name = $("itemName").value.trim();
   const quantity = Number($("itemQuantity").value || "1");
+  const min_quantity = Number($("itemMinQuantity")?.value || "0");
   const location = $("itemLocation").value.trim();
   const serial_number = $("itemSerial").value.trim();
   const notes = $("itemNotes").value.trim();
+  const photo_url = $("itemPhotoUrl")?.value.trim() || "";
 
   if (!name) {
     toast("Item name is required.", { type: "danger" });
@@ -1045,6 +1248,8 @@ async function addItem() {
   const body = {
     name,
     quantity: Number.isFinite(quantity) ? quantity : 1,
+    min_quantity: Number.isFinite(min_quantity) ? min_quantity : 0,
+    photo_url,
     location,
     serial_number,
     notes,
@@ -1060,8 +1265,10 @@ async function addItem() {
     await apiPost("/items/", body);
     $("itemName").value = "";
     $("itemQuantity").value = "1";
+    if ($("itemMinQuantity")) $("itemMinQuantity").value = "0";
     $("itemLocation").value = "";
     $("itemSerial").value = "";
+    if ($("itemPhotoUrl")) $("itemPhotoUrl").value = "";
     $("itemNotes").value = "";
     await refreshAll();
     toast("Item added.", { type: "success" });
@@ -1096,16 +1303,21 @@ async function editItem(it) {
   if (name == null) return;
   const quantityStr = prompt("Quantity:", String(it.quantity ?? 1));
   if (quantityStr == null) return;
+  const minQtyStr = prompt("Min qty (low stock):", String(it.min_quantity ?? 0));
+  if (minQtyStr == null) return;
   const location = prompt("Location:", it.location || "") ?? "";
   const serial_number = prompt("Serial number:", it.serial_number || "") ?? "";
   const notes = prompt("Notes:", it.notes || "") ?? "";
+  const photo_url = prompt("Photo URL (optional):", it.photo_url || "") ?? "";
 
   const body = {
     name: name.trim(),
     quantity: Number(quantityStr || "1"),
+    min_quantity: Number(minQtyStr || "0"),
     location,
     serial_number,
     notes,
+    photo_url,
   };
 
   try {
@@ -1246,6 +1458,48 @@ function init() {
 
   // Items
   $("addItemBtn").addEventListener("click", addItem);
+  const exportCsvBtn = $("exportCsvBtn");
+  if (exportCsvBtn) {
+    exportCsvBtn.addEventListener("click", () => {
+      try {
+        exportCsvFromCurrentView();
+      } catch (e) {
+        toast(String(e?.message || e), { type: "danger" });
+      }
+    });
+  }
+
+  const prevPageBtn = $("prevPageBtn");
+  if (prevPageBtn) {
+    prevPageBtn.addEventListener("click", () => {
+      itemsPage = Math.max(1, itemsPage - 1);
+      renderItemsTable();
+    });
+  }
+
+  const nextPageBtn = $("nextPageBtn");
+  if (nextPageBtn) {
+    nextPageBtn.addEventListener("click", () => {
+      itemsPage = itemsPage + 1;
+      renderItemsTable();
+    });
+  }
+
+  const pageSizeSelect = $("pageSizeSelect");
+  if (pageSizeSelect) {
+    itemsPageSize = safeNumber(pageSizeSelect.value, 25);
+    pageSizeSelect.addEventListener("change", (e) => {
+      itemsPageSize = safeNumber(e.target.value, 25);
+      itemsPage = 1;
+      renderItemsTable();
+    });
+  }
+
+  const activityRefreshBtn = $("activityRefreshBtn");
+  if (activityRefreshBtn) {
+    activityRefreshBtn.addEventListener("click", fetchActivity);
+  }
+
   $("showActiveBtn").addEventListener("click", () => setItemViewMode("active"));
   $("showArchivedBtn").addEventListener("click", () => {
     if (!isStaff()) {
@@ -1259,6 +1513,7 @@ function init() {
   if (itemsSearch) {
     itemsSearch.addEventListener("input", (e) => {
       itemsSearchQuery = e.target.value || "";
+      itemsPage = 1;
       renderItemsTable();
     });
   }
@@ -1267,6 +1522,7 @@ function init() {
   if (itemsCategoryFilter) {
     itemsCategoryFilter.addEventListener("change", (e) => {
       itemsCategoryQuery = e.target.value || "__all__";
+      itemsPage = 1;
       renderItemsTable();
     });
   }
