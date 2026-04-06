@@ -603,7 +603,13 @@ code {
   text-align: center;
   grid-column: 1;
   justify-self: center;
-  max-width: calc(100% - 170px);
+  max-width: calc(100% - 220px);
+}
+
+@media (min-width: 900px) {
+  .header {
+    --header-logo-size: 48px;
+  }
 }
 
 .header-title {
@@ -619,8 +625,8 @@ code {
 }
 
 .header-logo {
-  width: 34px;
-  height: 34px;
+  width: var(--header-logo-size, 44px);
+  height: var(--header-logo-size, 44px);
   border-radius: 999px;
   object-fit: cover;
   background: rgba(255, 255, 255, 0.92);
@@ -647,6 +653,7 @@ code {
 @media (max-width: 520px) {
   .header {
     padding: 12px 12px;
+    --header-logo-size: 34px;
   }
 
   .header h1 {
