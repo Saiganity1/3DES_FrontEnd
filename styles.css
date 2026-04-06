@@ -379,8 +379,8 @@ body {
 }
 
 .auth-mango::before {
-  left: -40px;
-  top: 90px;
+  left: -70px;
+  top: 120px;
   background: radial-gradient(
     circle at 40% 40%,
     color-mix(in srgb, var(--highlight) 52%, transparent),
@@ -389,8 +389,8 @@ body {
 }
 
 .auth-mango::after {
-  right: -60px;
-  top: 140px;
+  right: -70px;
+  top: 120px;
   background: radial-gradient(
     circle at 40% 40%,
     color-mix(in srgb, var(--brand-red) 44%, transparent),
@@ -540,15 +540,26 @@ code {
 }
 
 /* Signed-out: keep auth centered under header */
-body:not(.is-authed) .container {
-  min-height: 100vh;
-  display: flex;
-  flex-direction: column;
-}
+@media (min-width: 900px) {
+  body:not(.is-authed) .container {
+    min-height: 100vh;
+    display: grid;
+    grid-template-rows: auto 1fr;
+  }
 
-body:not(.is-authed) #auth {
-  margin-top: auto;
-  margin-bottom: auto;
+  body:not(.is-authed) .header {
+    margin-bottom: 0;
+  }
+
+  body:not(.is-authed) #auth {
+    align-self: center;
+    margin-top: 0;
+    margin-bottom: 0;
+  }
+
+  body:not(.is-authed) .auth-mango {
+    margin-top: 0;
+  }
 }
 
 .header {
