@@ -603,12 +603,12 @@ code {
   text-align: center;
   grid-column: 1;
   justify-self: center;
-  max-width: calc(100% - 360px);
+  max-width: calc(100% - 330px);
 }
 
 @media (min-width: 900px) {
   .header {
-    --header-logo-size: 80px;
+    --header-logo-size: 72px;
   }
 }
 
