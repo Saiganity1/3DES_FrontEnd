@@ -600,6 +600,8 @@ code {
   color: #fff;
   margin: 0;
   text-align: center;
+  grid-column: 2;
+  justify-self: center;
 }
 
 .session-bar {
@@ -609,6 +611,7 @@ code {
 
 .session-bar {
   justify-self: end;
+  grid-column: 3;
   padding: 6px 10px;
   border: 1px solid rgba(255, 255, 255, 0.18);
   border-radius: 999px;
