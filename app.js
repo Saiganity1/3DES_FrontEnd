@@ -530,6 +530,7 @@ function updateSessionBar() {
 
 function updateAppVisibility() {
   const authed = !!accessToken;
+  document.body.classList.toggle("is-authed", authed);
   setHidden($("auth"), authed);
   setHidden($("app"), !authed);
 

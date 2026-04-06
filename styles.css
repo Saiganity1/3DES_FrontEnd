@@ -36,6 +36,10 @@
   box-sizing: border-box;
 }
 
+[hidden] {
+  display: none !important;
+}
+
 body {
   margin: 0;
   font-family: Inter, system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
@@ -345,6 +349,7 @@ body {
   max-width: 720px;
   margin: 26px auto 0;
   padding: 18px;
+  position: relative;
 }
 
 /* Remove outer card feel; the inner box is the card */
@@ -365,6 +370,12 @@ body {
   filter: blur(2px);
   opacity: 0.75;
   pointer-events: none;
+  z-index: 0;
+}
+
+.auth-mango > * {
+  position: relative;
+  z-index: 1;
 }
 
 .auth-mango::before {
@@ -526,6 +537,18 @@ code {
   max-width: 1120px;
   margin: 0 auto;
   padding: 28px 16px 48px;
+}
+
+/* Signed-out: keep auth centered under header */
+body:not(.is-authed) .container {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+body:not(.is-authed) #auth {
+  margin-top: auto;
+  margin-bottom: auto;
 }
 
 .header {
