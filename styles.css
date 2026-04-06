@@ -72,6 +72,25 @@ body {
   max-width: 980px;
   margin-left: auto;
   margin-right: auto;
+  position: relative;
+  overflow: hidden;
+}
+
+.auth-card::before {
+  content: "";
+  position: absolute;
+  left: 14px;
+  right: 14px;
+  top: 12px;
+  height: 3px;
+  border-radius: 999px;
+  background: linear-gradient(
+    90deg,
+    color-mix(in srgb, var(--highlight) 82%, transparent),
+    color-mix(in srgb, var(--brand) 48%, transparent),
+    color-mix(in srgb, var(--brand-red) 52%, transparent)
+  );
+  pointer-events: none;
 }
 
 .auth-shell {
@@ -85,7 +104,18 @@ body {
   border: 1px solid var(--border-soft);
   border-radius: 14px;
   padding: 18px;
-  background: var(--surface-2);
+  background:
+    radial-gradient(
+      540px 240px at 30% 0%,
+      color-mix(in srgb, var(--highlight) 16%, transparent),
+      transparent 60%
+    ),
+    radial-gradient(
+      620px 320px at 0% 100%,
+      color-mix(in srgb, var(--brand) 14%, transparent),
+      transparent 62%
+    ),
+    var(--surface-2);
   display: grid;
   align-content: start;
   gap: 10px;
@@ -116,6 +146,10 @@ body {
   align-items: center;
   gap: 12px;
   margin-bottom: 12px;
+}
+
+.auth-form-header .brand-mark-sm {
+  box-shadow: 0 10px 26px rgba(0, 35, 102, 0.16);
 }
 
 .auth-form-title {
@@ -156,7 +190,8 @@ body {
   border: 1px solid var(--border-soft);
   border-radius: 14px;
   padding: 18px;
-  background: var(--surface);
+  background: rgba(255, 255, 255, 0.92);
+  backdrop-filter: blur(10px);
 }
 
 .auth-panels {
@@ -194,13 +229,31 @@ body {
   padding: 6px;
 }
 
+.auth-form .tabs {
+  background: rgba(255, 255, 255, 0.82);
+  border-color: color-mix(in srgb, var(--brand) 14%, var(--border-soft));
+}
+
 .tab {
   transition: background var(--t) var(--ease-soft), border-color var(--t) var(--ease-soft),
     transform var(--t-fast) var(--ease-soft);
 }
 
+.auth-form .tab {
+  padding: 9px 14px;
+}
+
 .tab:active {
   transform: translateY(1px);
+}
+
+.auth-form .row {
+  margin-top: 12px;
+}
+
+.auth-form .row .btn {
+  width: 100%;
+  justify-content: center;
 }
 
 code {
