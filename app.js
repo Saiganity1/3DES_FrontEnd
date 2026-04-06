@@ -41,7 +41,7 @@ let items = [];
 let archivedItems = [];
 let itemViewMode = "active"; // active | archived
 
-let mainViewMode = localStorage.getItem(STORAGE_KEYS.mainView) || "items"; // items | manage
+let mainViewMode = localStorage.getItem(STORAGE_KEYS.mainView) || "manage"; // items | manage
 
 let accounts = [];
 let accountsFilter = "active"; // active | taken_down | all
