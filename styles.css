@@ -8,6 +8,12 @@
   --primary-hover: #0277b8;
   --primary-soft: #e6f4ff;
 
+  --ease-out: cubic-bezier(0.2, 0.9, 0.2, 1);
+  --ease-soft: cubic-bezier(0.2, 0.75, 0.2, 1);
+  --t-fast: 120ms;
+  --t: 180ms;
+  --t-slow: 260ms;
+
   --bg: #f5f6f8;
   --surface: #fff;
   --surface-2: #f5f5f5;
@@ -148,7 +154,8 @@ body {
   opacity: 0;
   transform: translateY(8px);
   pointer-events: none;
-  transition: max-height 220ms ease, opacity 180ms ease, transform 180ms ease;
+  transition: max-height var(--t-slow) var(--ease-soft), opacity var(--t) var(--ease-soft),
+    transform var(--t) var(--ease-soft);
 }
 
 .auth-panel.auth-panel-active {
@@ -172,7 +179,8 @@ body {
 }
 
 .tab {
-  transition: background 180ms ease, border-color 180ms ease, transform 120ms ease;
+  transition: background var(--t) var(--ease-soft), border-color var(--t) var(--ease-soft),
+    transform var(--t-fast) var(--ease-soft);
 }
 
 .tab:active {
@@ -228,6 +236,14 @@ code {
   padding: 20px;
   margin: 12px 0;
   box-shadow: var(--shadow-sm);
+  transition: transform var(--t) var(--ease-out), box-shadow var(--t) var(--ease-out),
+    border-color var(--t) var(--ease-out);
+}
+
+.card:hover {
+  transform: translateY(-1px);
+  border-color: var(--border);
+  box-shadow: 0 10px 26px rgba(0, 0, 0, 0.10);
 }
 
 .card-inner {
@@ -355,7 +371,14 @@ h3 {
   font-size: 1rem;
   outline: none;
   background: rgba(255, 255, 255, 0.92);
-  transition: border-color 120ms ease, box-shadow 120ms ease;
+  transition: border-color var(--t-fast) var(--ease-soft), box-shadow var(--t-fast) var(--ease-soft),
+    background var(--t-fast) var(--ease-soft);
+}
+
+.field input:hover,
+.field select:hover,
+.field textarea:hover {
+  border-color: var(--border);
 }
 
 .field input:focus,
@@ -382,7 +405,9 @@ h3 {
   cursor: pointer;
   font-weight: 600;
   box-shadow: 0 1px 0 rgba(0, 0, 0, 0.03);
-  transition: background 120ms ease, border-color 120ms ease, transform 80ms ease, box-shadow 120ms ease;
+  transition: background var(--t-fast) var(--ease-soft), border-color var(--t-fast) var(--ease-soft),
+    transform var(--t-fast) var(--ease-soft), box-shadow var(--t-fast) var(--ease-soft),
+    color var(--t-fast) var(--ease-soft);
 }
 
 .btn:hover {
@@ -479,6 +504,11 @@ h3 {
   border-radius: var(--radius-sm);
   background: var(--surface);
   box-shadow: var(--shadow-sm);
+  transition: box-shadow var(--t) var(--ease-out), transform var(--t) var(--ease-out);
+}
+
+.table-wrap:hover {
+  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.10);
 }
 
 .table {
@@ -525,7 +555,7 @@ h3 {
 }
 
 .table tbody tr {
-  transition: background 120ms ease;
+  transition: background var(--t-fast) var(--ease-soft), transform var(--t-fast) var(--ease-soft);
 }
 
 .table tbody tr:hover {
@@ -563,6 +593,8 @@ h3 {
   font-size: 0.85rem;
   line-height: 1;
   white-space: nowrap;
+  transition: background var(--t-fast) var(--ease-soft), border-color var(--t-fast) var(--ease-soft),
+    transform var(--t-fast) var(--ease-soft);
 }
 
 .badge-primary {
@@ -624,6 +656,30 @@ h3 {
   z-index: 50;
 }
 
+@keyframes overlay-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes modal-in {
+  from {
+    opacity: 0;
+    transform: translateY(10px) scale(0.985);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+.modal:not([hidden]) {
+  animation: overlay-in var(--t) var(--ease-soft);
+}
+
 /* Ensure the HTML `hidden` attribute always wins (prevents modal from
    showing by default and enables Close/Esc to hide it reliably). */
 .modal[hidden] {
@@ -639,6 +695,20 @@ h3 {
   border-radius: var(--radius);
   padding: 14px;
   box-shadow: var(--shadow-md);
+  transform-origin: 50% 10%;
+}
+
+.modal:not([hidden]) .modal-card {
+  animation: modal-in var(--t-slow) var(--ease-out);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  * {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
 }
 
 .modal-header {
