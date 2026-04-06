@@ -524,7 +524,15 @@ function setAuthMode(mode) {
 function updateSessionBar() {
   const sessionBar = $("sessionBar");
   if (!sessionBar) return;
-  const who = me ? `${me.username}${isAdmin() ? " (admin)" : isStaff() ? " (staff)" : " (viewer)"}` : "signed out";
+
+  if (!accessToken || !me) {
+    sessionBar.textContent = "";
+    sessionBar.hidden = true;
+    return;
+  }
+
+  sessionBar.hidden = false;
+  const who = `${me.username}${isAdmin() ? " (admin)" : isStaff() ? " (staff)" : " (viewer)"}`;
   sessionBar.textContent = `Session: ${who}`;
 }
 
