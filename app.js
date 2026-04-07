@@ -1,11 +1,30 @@
 /* global API_BASE_URL */
 
+/*
+  CIT Inventory Frontend (static JS)
+
+  What this file is responsible for:
+  - Auth: register/login, store JWT tokens, update signed-in UI state
+  - Data fetching: call the Django REST API (items, categories, accounts, activity)
+  - Rendering: update DOM tables/cards, show toasts, manage modals
+  - Role-based UI: viewers vs staff vs admin see different controls
+
+  Key concepts used throughout:
+  - "hidden" attribute: We show/hide sections by toggling element.hidden.
+  - JWT: accessToken is sent as Authorization: Bearer <token>.
+  - apiBaseUrl: configured via config.js (window.API_BASE_URL).
+*/
+
 const STORAGE_KEYS = {
   access: "inventory.accessToken",
   refresh: "inventory.refreshToken",
   mainView: "inventory.mainView", // items | manage
   manageMode: "inventory.manageMode", // categories | addItem
 };
+
+// -----------------------------
+// DOM helpers (tiny utilities)
+// -----------------------------
 
 function $(id) {
   return document.getElementById(id);
@@ -75,6 +94,10 @@ let categories = [];
 let items = [];
 let archivedItems = [];
 let itemViewMode = "active"; // active | archived
+
+// -----------------------------
+// UI state (filters, paging)
+// -----------------------------
 
 let mainViewMode = localStorage.getItem(STORAGE_KEYS.mainView) || "manage"; // items | manage
 let manageMode = localStorage.getItem(STORAGE_KEYS.manageMode) || "categories"; // categories | addItem

@@ -1,3 +1,15 @@
+/*
+  CIT Inventory Frontend Styles
+
+  How this stylesheet is organized (presentation-friendly):
+  - Theme variables: :root
+  - Global resets/helpers: *, [hidden], body, focus
+  - Auth (Mangoools-inspired) layout
+  - Header branding layout (SSITE left, title center, UA right)
+  - Cards/tables/buttons
+  - Modal styles (uses [hidden] to reliably hide)
+*/
+
 :root {
   color-scheme: light;
   /* UA-inspired palette (approx.): navy / red / gold */
@@ -36,6 +48,11 @@
   box-sizing: border-box;
 }
 
+/*
+  Important behavior rule:
+  - The HTML `hidden` attribute is used across the app to show/hide UI.
+  - `!important` ensures no other selector accidentally overrides it.
+*/
 [hidden] {
   display: none !important;
 }
@@ -624,6 +641,13 @@ code {
   gap: 12px;
   width: 100%;
 }
+
+/*
+  Header logo alignment requirements:
+  - SSITE stays on the left
+  - UA stays on the right
+  - Title text stays centered
+*/
 
 .header-logo-left {
   justify-self: start;

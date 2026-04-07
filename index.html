@@ -14,6 +14,13 @@
   </head>
   <body>
     <div class="container">
+      <!--
+        HEADER (branding + session)
+        - Left logo: SSITE
+        - Center text: system title
+        - Right logo: University of the Assumption
+        - #sessionBar is populated by app.js after login (shows who is signed in)
+      -->
       <header class="header">
         <h1 class="header-title">
           <img class="header-logo header-logo-left" src="./SSITE.jpg" alt="SSITE" width="72" height="72" decoding="async" loading="eager" />
@@ -23,6 +30,11 @@
         <div id="sessionBar" class="session-bar"></div>
       </header>
 
+      <!--
+        AUTH SECTION
+        - This is the "signed-out" UI.
+        - app.js toggles which panel is visible (login vs register) and shows errors in #authError/#registerError.
+      -->
       <section id="auth" class="card auth-card auth-mango" data-mode="login">
         <div class="auth-top">
           <div class="auth-logo">
