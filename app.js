@@ -111,6 +111,8 @@ let itemsPageSize = 25;
 let accounts = [];
 let accountsFilter = "active"; // active | taken_down | all
 
+let activityOpen = false;
+
 function clamp(n, min, max) {
   return Math.max(min, Math.min(max, n));
 }
@@ -273,7 +275,8 @@ async function fetchActivity() {
     return;
   }
 
-  setHidden(card, false);
+  if (!activityOpen) return;
+
   showError(err, "");
   list.innerHTML = '<div class="muted small">Loading…</div>';
 
@@ -310,6 +313,24 @@ async function fetchActivity() {
   } catch (e) {
     list.innerHTML = "";
     showError(err, e?.message || String(e));
+  }
+}
+
+function setActivityOpen(open) {
+  activityOpen = !!open;
+
+  const toggleBtn = $("activityToggleBtn");
+  const card = $("activityCard");
+  if (toggleBtn) {
+    toggleBtn.setAttribute("aria-expanded", activityOpen ? "true" : "false");
+    toggleBtn.textContent = activityOpen ? "Hide activity" : "Recent activity";
+  }
+  if (card) {
+    setHidden(card, !activityOpen);
+  }
+
+  if (activityOpen) {
+    fetchActivity();
   }
 }
 
@@ -729,6 +750,20 @@ function updateRoleUi() {
   banner.appendChild(msg);
 
   setHidden(banner, false);
+
+  const activityToggleBtn = $("activityToggleBtn");
+  const activityCard = $("activityCard");
+  if (activityToggleBtn && activityCard) {
+    if (admin) {
+      setHidden(activityToggleBtn, false);
+      activityToggleBtn.setAttribute("aria-expanded", activityOpen ? "true" : "false");
+      if (!activityOpen) setHidden(activityCard, true);
+    } else {
+      setHidden(activityToggleBtn, true);
+      setHidden(activityCard, true);
+      activityOpen = false;
+    }
+  }
 }
 
 function formatRole(u) {
@@ -1164,7 +1199,7 @@ async function refreshAll() {
 
     renderItemsTable();
     renderDashboard();
-    fetchActivity();
+    if (activityOpen) fetchActivity();
   } catch (e) {
     const msg = String(e?.message || e);
     if (/Failed to fetch|NetworkError|ECONNREFUSED|ENOTFOUND/i.test(msg)) {
@@ -1223,6 +1258,11 @@ async function handleRegister() {
     return;
   }
 
+  if (password.length < 8) {
+    showError($("registerError"), "Password must be at least 8 characters.");
+    return;
+  }
+
   try {
     await apiPost(
       "/auth/register/",
@@ -1230,14 +1270,38 @@ async function handleRegister() {
       { allowUnauthed: true }
     );
 
+    // Reset the register form and guide the user back to login.
+    $("regUsername").value = "";
+    $("regPassword").value = "";
+    $("regEmail").value = "";
+    $("regFirstName").value = "";
+    $("regLastName").value = "";
+
     setAuthMode("login");
     $("loginUsername").value = username;
     $("loginPassword").value = "";
-    showError($("authError"), "Account created. You can sign in now.");
+    showError($("authError"), "");
+    toast("Account created. You can sign in now.", { type: "success" });
+    $("loginPassword").focus();
   } catch (e) {
     const payload = e?.payload;
     if (payload && typeof payload === "object") {
-      showError($("registerError"), JSON.stringify(payload, null, 2));
+      const lines = [];
+      const detail = typeof payload.detail === "string" ? payload.detail.trim() : "";
+      if (detail) lines.push(detail);
+
+      for (const [key, val] of Object.entries(payload)) {
+        if (key === "detail") continue;
+        if (Array.isArray(val)) {
+          const msg = val.map((x) => String(x)).join(" ").trim();
+          if (msg) lines.push(`${key}: ${msg}`);
+        } else if (typeof val === "string") {
+          const msg = val.trim();
+          if (msg) lines.push(`${key}: ${msg}`);
+        }
+      }
+
+      showError($("registerError"), lines.length ? lines.join("\n") : "Registration failed.");
     } else {
       showError($("registerError"), String(e?.message || e));
     }
@@ -1251,6 +1315,7 @@ function handleLogout() {
   categories = [];
   items = [];
   archivedItems = [];
+  activityOpen = false;
   localStorage.removeItem(STORAGE_KEYS.mainView);
   localStorage.removeItem(STORAGE_KEYS.manageMode);
   mainViewMode = "manage";
@@ -1561,6 +1626,11 @@ function init() {
   const activityRefreshBtn = $("activityRefreshBtn");
   if (activityRefreshBtn) {
     activityRefreshBtn.addEventListener("click", fetchActivity);
+  }
+
+  const activityToggleBtn = $("activityToggleBtn");
+  if (activityToggleBtn) {
+    activityToggleBtn.addEventListener("click", () => setActivityOpen(!activityOpen));
   }
 
   $("showActiveBtn").addEventListener("click", () => setItemViewMode("active"));
