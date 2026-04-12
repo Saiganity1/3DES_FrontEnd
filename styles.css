@@ -935,6 +935,15 @@ h3 {
   gap: 12px;
 }
 
+/*
+  One-column grid helper.
+  Note: this must override the base `.grid` rule (same specificity),
+  so we target `.grid.grid-1` here.
+*/
+.grid.grid-1 {
+  grid-template-columns: 1fr;
+}
+
 .field {
   display: grid;
   gap: 6px;
@@ -963,6 +972,21 @@ h3 {
   background: rgba(255, 255, 255, 0.92);
   transition: border-color var(--t-fast) var(--ease-soft), box-shadow var(--t-fast) var(--ease-soft),
     background var(--t-fast) var(--ease-soft);
+}
+
+/*
+  When an input is wrapped by `.input-with-icon`, the wrapper provides
+  the border/focus ring. Keep the inner input visually clean.
+*/
+.field .input-with-icon input {
+  border: 0;
+  box-shadow: none;
+  padding: 10px 10px;
+}
+
+.field .input-with-icon input:focus {
+  border: 0;
+  box-shadow: none;
 }
 
 .field input:hover,
