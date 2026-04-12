@@ -1,4 +1,4 @@
-/*
+    /*
   CIT Inventory Frontend Styles
 
   How this stylesheet is organized (presentation-friendly):
@@ -86,6 +86,35 @@ body {
   line-height: 1.45;
   -webkit-font-smoothing: antialiased;
   text-rendering: optimizeLegibility;
+  overflow-x: hidden;
+}
+
+body::before,
+body::after {
+  content: "";
+  position: fixed;
+  inset: auto;
+  width: 28vw;
+  height: 28vw;
+  min-width: 220px;
+  min-height: 220px;
+  border-radius: 999px;
+  pointer-events: none;
+  filter: blur(24px);
+  opacity: 0.22;
+  z-index: -1;
+}
+
+body::before {
+  left: -8vw;
+  top: 18vh;
+  background: radial-gradient(circle, rgba(255, 221, 120, 0.95) 0%, rgba(255, 221, 120, 0) 70%);
+}
+
+body::after {
+  right: -7vw;
+  top: 18vh;
+  background: radial-gradient(circle, rgba(243, 167, 177, 0.95) 0%, rgba(243, 167, 177, 0) 70%);
 }
 
 :focus-visible {
@@ -425,8 +454,8 @@ body {
   gap: 10px;
   justify-items: center;
   text-align: center;
-  margin-bottom: 16px;
-  margin-top: 200px;
+  margin-bottom: 12px;
+  margin-top: 150px;
 }
 
 .auth-logo {
@@ -439,11 +468,12 @@ body {
   font-weight: 900;
   letter-spacing: -0.01em;
   color: var(--label);
+  font-size: 0.98rem;
 }
 
 .auth-headline {
   margin: 0;
-  font-size: 2.0rem;
+  font-size: 1.9rem;
   letter-spacing: -0.03em;
 }
 
@@ -452,12 +482,12 @@ body {
 }
 
 .auth-box {
-  max-width: 520px;
+  max-width: 430px;
   margin: 0 auto;
   background: rgba(255, 255, 255, 0.92);
   border: 1px solid var(--border-soft);
-  border-radius: 16px;
-  padding: 18px;
+  border-radius: 14px;
+  padding: 16px;
   box-shadow: var(--shadow-sm);
   backdrop-filter: blur(10px);
 }
@@ -469,11 +499,11 @@ body {
 .input-with-icon {
   display: flex;
   align-items: center;
-  gap: 10px;
+  gap: 8px;
   width: 100%;
   border: 1px solid var(--input-border);
-  border-radius: var(--radius-sm);
-  padding: 0 12px;
+  border-radius: 9px;
+  padding: 0 10px;
   background: rgba(255, 255, 255, 0.92);
   transition: border-color var(--t-fast) var(--ease-soft), box-shadow var(--t-fast) var(--ease-soft),
     background var(--t-fast) var(--ease-soft);
@@ -483,13 +513,13 @@ body {
   flex: 1;
   min-width: 0;
   border: 0;
-  padding: 0 12px;
+  padding: 0 10px;
   background: transparent;
 }
 
 .input-icon {
-  width: 18px;
-  height: 18px;
+  width: 16px;
+  height: 16px;
   background: var(--muted);
   opacity: 0.75;
 }
@@ -529,7 +559,7 @@ body {
   width: 100%;
   justify-content: center;
   border-radius: 999px;
-  padding: 12px 14px;
+  padding: 10px 14px;
   background: linear-gradient(
     180deg,
     color-mix(in srgb, var(--primary) 58%, var(--highlight)),
@@ -551,6 +581,7 @@ body {
 .auth-links {
   margin-top: 10px;
   justify-content: space-between;
+  font-size: 0.9rem;
 }
 
 .link {
@@ -578,7 +609,7 @@ code {
   max-width: 100%;
   margin: 0;
   margin-top: 0;
-  padding: 28px 16px 48px;
+  padding: 2rem 16px 48px;
 }
 
 /* Signed-out: keep auth centered under header */
@@ -926,7 +957,7 @@ h3 {
   width: 100%;
   border: 1px solid var(--input-border);
   border-radius: var(--radius-sm);
-  padding: 12px;
+  padding: 10px;
   font-size: 1rem;
   outline: none;
   background: rgba(255, 255, 255, 0.92);
