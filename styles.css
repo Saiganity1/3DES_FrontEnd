@@ -964,6 +964,19 @@ h3 {
   box-shadow: none !important;
 }
 
+/*
+  The auth card is narrow (~430px). Our global `.field { min-width: 220px; }`
+  is great for the main app forms, but it breaks the First/Last name 2-col row
+  in the register panel. Override it only within the auth box.
+*/
+.auth-box .field {
+  min-width: 0;
+}
+
+.auth-box .grid {
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+}
+
 .field {
   display: grid;
   gap: 6px;
