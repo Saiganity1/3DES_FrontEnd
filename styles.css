@@ -631,7 +631,7 @@ code {
   align-items: center;
   gap: 16px;
   padding: 14px 20px;
-  width: 100%;
+  width: 100vw;
   max-width: none;
   border: 1px solid rgba(255, 255, 255, 0.14);
   border-left: 0;
@@ -643,8 +643,8 @@ code {
   box-shadow: 0 14px 34px rgba(0, 35, 102, 0.24);
   margin: 0;
   margin-top: -2rem;
-  margin-left: -16px;
-  margin-right: -16px;
+  margin-left: calc(50% - 50vw);
+  margin-right: calc(50% - 50vw);
   margin-bottom: 16px;
 }
 
