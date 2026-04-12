@@ -503,7 +503,8 @@ body::after {
   width: 100%;
   border: 1px solid var(--input-border);
   border-radius: 9px;
-  padding: 0 10px;
+  padding: 10px 12px;
+  min-height: 44px;
   background: rgba(255, 255, 255, 0.92);
   transition: border-color var(--t-fast) var(--ease-soft), box-shadow var(--t-fast) var(--ease-soft),
     background var(--t-fast) var(--ease-soft);
@@ -513,7 +514,7 @@ body::after {
   flex: 1;
   min-width: 0;
   border: 0;
-  padding: 0 10px;
+  padding: 0;
   background: transparent;
 }
 
@@ -981,7 +982,7 @@ h3 {
 .field .input-with-icon input {
   border: 0;
   box-shadow: none;
-  padding: 10px 10px;
+  padding: 0;
 }
 
 .field .input-with-icon input:focus {
