@@ -62,26 +62,26 @@ body {
   font-family: Inter, system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
   background:
     radial-gradient(
-      1100px 800px at 8% 0%,
-      color-mix(in srgb, var(--primary) 12%, transparent),
+      1100px 800px at 10% 24%,
+      color-mix(in srgb, var(--primary) 10%, transparent),
       transparent 62%
     ),
     radial-gradient(
-      900px 700px at 0% 100%,
-      color-mix(in srgb, var(--brand) 10%, transparent),
+      1100px 800px at 92% 24%,
+      color-mix(in srgb, var(--brand-red) 10%, transparent),
       transparent 62%
     ),
     radial-gradient(
-      1000px 760px at 92% 0%,
-      color-mix(in srgb, var(--highlight) 18%, transparent),
-      transparent 60%
-    ),
-    radial-gradient(
-      900px 680px at 85% 95%,
-      color-mix(in srgb, var(--brand-red) 14%, transparent),
+      1100px 800px at 92% 78%,
+      color-mix(in srgb, var(--highlight) 9%, transparent),
       transparent 62%
     ),
-    linear-gradient(180deg, var(--surface-2) 0%, var(--bg) 38%, var(--bg) 100%);
+    linear-gradient(
+      90deg,
+      color-mix(in srgb, var(--primary) 6%, var(--bg)) 0%,
+      var(--bg) 50%,
+      color-mix(in srgb, var(--brand-red) 6%, var(--bg)) 100%
+    );
   color: var(--text);
   line-height: 1.45;
   -webkit-font-smoothing: antialiased;
@@ -397,9 +397,9 @@ body::after {
 
 /* Mangoools-style centered auth */
 .auth-mango {
-  max-width: 720px;
+  max-width: 980px;
   margin: 26px auto 0;
-  padding: 18px;
+  padding: 54px 24px;
   position: relative;
 }
 
@@ -409,6 +409,7 @@ body::after {
   border: 1px solid rgba(0, 0, 0, 0.06);
   box-shadow: 0 18px 42px rgba(0, 0, 0, 0.10);
   backdrop-filter: blur(8px);
+  border-radius: 18px;
 }
 
 .auth-mango::before,
@@ -455,7 +456,7 @@ body::after {
   justify-items: center;
   text-align: center;
   margin-bottom: 12px;
-  margin-top: 26px;
+  margin-top: 18px;
 }
 
 .auth-logo {
@@ -611,6 +612,10 @@ code {
   margin: 0;
   margin-top: 0;
   padding: 2rem 16px 48px;
+}
+
+body:not(.is-authed) .container {
+  padding-top: 10px;
 }
 
 /* Signed-out: keep auth centered under header */
