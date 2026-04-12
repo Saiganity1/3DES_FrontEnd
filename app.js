@@ -569,15 +569,9 @@ function updateSessionBar() {
   const sessionBar = $("sessionBar");
   if (!sessionBar) return;
 
-  if (!accessToken || !me) {
-    sessionBar.textContent = "";
-    sessionBar.hidden = true;
-    return;
-  }
-
-  sessionBar.hidden = false;
-  const who = `${me.username}${isAdmin() ? " (admin)" : isStaff() ? " (staff)" : " (viewer)"}`;
-  sessionBar.textContent = `Session: ${who}`;
+  // Requirement: don't show the "Session: <user>" label in the header.
+  sessionBar.textContent = "";
+  sessionBar.hidden = true;
 }
 
 function updateAppVisibility() {
