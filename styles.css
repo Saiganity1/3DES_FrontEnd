@@ -945,6 +945,25 @@ h3 {
   grid-template-columns: 1fr;
 }
 
+/*
+  Auth forms must be single-column (Username then Password, etc.).
+  This rule is intentionally strong to avoid regressions from later `.grid` overrides.
+*/
+.auth-box .grid.grid-1 {
+  grid-template-columns: 1fr !important;
+}
+
+.auth-box .input-with-icon {
+  padding: 10px 12px;
+  min-height: 44px;
+}
+
+.auth-box .input-with-icon input {
+  padding: 0 !important;
+  border: 0 !important;
+  box-shadow: none !important;
+}
+
 .field {
   display: grid;
   gap: 6px;
