@@ -1103,6 +1103,13 @@ h3 {
 
 .actions .btn {
   border-radius: var(--radius-sm);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 92px;
+  white-space: nowrap;
+  overflow-wrap: normal;
+  word-break: normal;
 }
 
 .tabs {

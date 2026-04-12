@@ -624,7 +624,7 @@ function updateAppVisibility() {
 
   const itemsActionsTh = $("itemsActionsTh");
   if (itemsActionsTh) {
-    setHidden(itemsActionsTh, !authed || !isStaff());
+    setHidden(itemsActionsTh, !authed || !(isStaff() || canDecrypt()));
   }
 
   const archivedBtn = $("showArchivedBtn");
