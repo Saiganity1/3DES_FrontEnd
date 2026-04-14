@@ -1342,7 +1342,6 @@ async function addItem() {
   const location = $("itemLocation").value.trim();
   const serial_number = $("itemSerial").value.trim();
   const notes = $("itemNotes").value.trim();
-  const photo_url = $("itemPhotoUrl")?.value.trim() || "";
 
   if (!name) {
     toast("Item name is required.", { type: "danger" });
@@ -1353,7 +1352,6 @@ async function addItem() {
     name,
     quantity: Number.isFinite(quantity) ? quantity : 1,
     min_quantity: Number.isFinite(min_quantity) ? min_quantity : 0,
-    photo_url,
     location,
     serial_number,
     notes,
@@ -1372,7 +1370,6 @@ async function addItem() {
     if ($("itemMinQuantity")) $("itemMinQuantity").value = "0";
     $("itemLocation").value = "";
     $("itemSerial").value = "";
-    if ($("itemPhotoUrl")) $("itemPhotoUrl").value = "";
     $("itemNotes").value = "";
     await refreshAll();
     toast("Item added.", { type: "success" });
@@ -1412,7 +1409,6 @@ async function editItem(it) {
   const location = prompt("Location:", it.location || "") ?? "";
   const serial_number = prompt("Serial number:", it.serial_number || "") ?? "";
   const notes = prompt("Notes:", it.notes || "") ?? "";
-  const photo_url = prompt("Photo URL (optional):", it.photo_url || "") ?? "";
 
   const body = {
     name: name.trim(),
@@ -1421,7 +1417,6 @@ async function editItem(it) {
     location,
     serial_number,
     notes,
-    photo_url,
   };
 
   try {
